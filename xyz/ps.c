@@ -94,7 +94,8 @@ int check_string(char *c_string) {
     }
 
     
-    fprintf(file, "filename from go: \n %s", c_string);
+    fprintf(file, "filename from go: \n %s\n\n", c_string);
+    fprintf(file, "writing more things just for the sake of it...");
     
 
     fclose(file);
