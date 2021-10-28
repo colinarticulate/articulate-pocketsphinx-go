@@ -96,7 +96,8 @@ int check_string(char *c_string) {
     
     fprintf(file, "filename from go: \n %s\n\n", c_string);
     fprintf(file, "writing more things just for the sake of it...\n");
-    fflush(file);
+    fprintf(file, "Just another bit as this is a differetn version where we flush the file results.\n");
+    
 
     fclose(file);
     

@@ -351,6 +351,7 @@ void retrieve_results(){
                 fprintf(fresult, "%-20s %-5d %-5d\n", word, sf, ef);
     	    }
         }
+        fflush(fresult);
         fclose(fresult);
     }
 }
