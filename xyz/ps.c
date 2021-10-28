@@ -95,11 +95,11 @@ int check_string(char *c_string) {
 
     
     fprintf(file, "filename from go: \n %s\n\n", c_string);
-    fprintf(file, "writing more things just for the sake of it...");
-    
+    fprintf(file, "writing more things just for the sake of it...\n");
+    fflush(file);
 
     fclose(file);
-
+    
 
     return 0;
 }
