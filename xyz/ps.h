@@ -13,6 +13,9 @@
 
 #include <pocketsphinx.h>
 
+POCKETSPHINX_EXPORT
+ps_decoder_t *ps_init_buffered(cmd_ln_t *config, void *buffer, size_t size);
+
 // #include "sphinxbase/include/sphinxbase/err.h"
 // #include "sphinxbase/include/sphinxbase/ad.h"
 
@@ -342,16 +345,19 @@ void retrieve_results(){
         
         if (hyp != NULL) {
     	    fprintf(fresult, "%s (%d)\n", hyp, score);
+            fflush(fresult);
     	    fprintf(fresult, "%-20s %-5s %-5s\n", "word", "start", "end");
+            fflush(fresult);
 
     	    for ( seg = ps_seg_iter(ps); seg; seg = ps_seg_next(seg) ) {
                 int sf, ef;
                 char const *word = ps_seg_word(seg);
                 ps_seg_frames(seg, &sf, &ef);
                 fprintf(fresult, "%-20s %-5d %-5d\n", word, sf, ef);
+                fflush(fresult);
     	    }
         }
-        fflush(fresult);
+        
         fclose(fresult);
     }
 }

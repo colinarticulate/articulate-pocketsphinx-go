@@ -158,6 +158,7 @@ typedef unsigned long long uintgo;
 
 typedef struct { char *p; intgo n; } _gostring_;
 typedef struct { void* array; intgo len; intgo cap; } _goslice_;
+typedef struct { _gostring_ *array; intgo len; intgo cap; } _goslicestring_;
 
 
 
@@ -207,6 +208,14 @@ static void _swig_gopanic(const char *p) {
   if (!(expr)) { _swig_gopanic(msg); } else
 
 
+static _gostring_ Swig_AllocateString(const char *p, size_t l) {
+  _gostring_ ret;
+  ret.p = (char*)malloc(l);
+  memcpy(ret.p, p, l);
+  ret.n = l;
+  return ret;
+}
+
 static void Swig_free(void* p) {
   free(p);
 }
@@ -220,6 +229,7 @@ extern int create_file_params_nofilename(int argc, char *argv[]);
 extern int check_string(char *str);
 extern int passing_bytes(char *bytes, int len);
 extern int ps_call(void* jsgf_buffer, int jsgf_buffer_size, void* audio_buffer, int audio_buffer_size, int argc, char *argv[]);
+extern int modify_go_strings(_goslicestring_ text_results);
 
 #ifdef __cplusplus
 extern "C" {
@@ -373,6 +383,91 @@ intgo _wrap_ps_call_xyz_2460481bc7b6ab28(_goslice_ _swig_go_0, _goslice_ _swig_g
   return _swig_go_result;
 }
 
+
+//Testing how to return values in C to Go:
+
+intgo _wrap_modify_go_strings_2460481bc7b6ab28(_goslicestring_ go_data) {
+ 
+  int len ;
+  int result;
+  intgo _swig_go_result;
+  _goslicestring_ c_data;
+
+  c_data.array = (_gostring_*)malloc(go_data.len * sizeof(_gostring_));
+  c_data.len = go_data.len;
+  c_data.cap = go_data.cap;
+  len = go_data.len;
+  for( int i = 0; i < len; i++)
+  {
+  
+    char *p;
+    int n;
+    n = go_data.array[i].n;
+    c_data.array[i].n = n;
+    c_data.array[i].p = (char*)malloc((n + 1)*sizeof(char));
+    memcpy(c_data.array[i].p, go_data.array[i].p, sizeof(char)*(n+1));
+
+  }
+  
+  
+  result = (int)modify_go_strings(c_data);
+  _swig_go_result = result;
+  
+  //
+  for( int i = 0; i < len; i++)
+  {
+    char *p;
+    int n;
+    n = c_data.array[i].n;
+    go_data.array[i].n = n;
+    go_data.array[i].p = (char*)malloc((n)*sizeof(char));
+    memcpy(go_data.array[i].p, c_data.array[i].p, sizeof(char)*(n));
+  }
+  
+  for(int i = 0; i < len; i++){
+    free(c_data.array[i].p);
+  }
+
+  free(c_data.array);
+
+  return _swig_go_result;
+}
+
+// //some code:
+// static _gostring_ Swig_AllocateString(const char *p, size_t l) {
+//   _gostring_ ret;
+//   ret.p = (char*)malloc(l);
+//   memcpy(ret.p, p, l);
+//   ret.n = l;
+//   return ret;
+// }
+
+
+// //------
+//  int i;
+//   _gostring_* a;
+  
+//   arg1 = _swig_go_0.len;
+//   a = (_gostring_*) _swig_go_0.array;
+//   arg2 = (char **) malloc ((arg1 ) * sizeof (char *));
+//   for ( i = 0; i < arg1; i++) {
+//     _gostring_ *ps = &a[i];
+//     arg2[i] = (char*)malloc( ((int)(ps->n) + 1)*sizeof(char));
+//     memcpy(arg2[i],(char*) ps->p, (int)(ps->n) );
+//     //arg2[i] = (char *) ps->p;
+//     arg2[i][ps->n]='\0';
+//     // _gostring_ *ps = &a[i];
+//     // arg2[i] = (char *) ps->p;
+//   }
+//   //arg2[i] = NULL;
+//   //arg2[i] = '\0';
+
+// typedef long long intgo;
+// typedef unsigned long long uintgo; 
+
+// typedef struct { char *p; intgo n; } _gostring_;
+// typedef struct { void* array; intgo len; intgo cap; } _goslice_;
+// typedef struct { _gostring_ *array; intgo len; intgo cap; } _goslicestring_;
 
 #ifdef __cplusplus
 }

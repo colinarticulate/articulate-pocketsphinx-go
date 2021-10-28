@@ -26,12 +26,14 @@ typedef unsigned long long uintgo;
 
 typedef struct { char *p; intgo n; } _gostring_;
 typedef struct { void* array; intgo len; intgo cap; } _goslice_;
+typedef struct { _gostring_ *array; intgo len; intgo cap; } _goslicestring_;
 
 
 typedef _goslice_ swig_type_1;
 typedef _goslice_ swig_type_2;
 typedef _gostring_ swig_type_3;
 typedef _goslice_ swig_type_4;
+typedef _goslicestring_ swig_type_5;
 
 extern void _wrap_Swig_free_xyz_2460481bc7b6ab28(uintptr_t arg1);
 extern uintptr_t _wrap_Swig_malloc_xyz_2460481bc7b6ab28(swig_intgo arg1);
@@ -40,6 +42,7 @@ extern swig_intgo _wrap_passing_bytes_xyz_2460481bc7b6ab28(swig_type_1 arg1);
 extern swig_intgo _wrap_create_file_params_nofilename_xyz_2460481bc7b6ab28(swig_type_2 arg1);
 extern swig_intgo _wrap_check_string_xyz_2460481bc7b6ab28(swig_type_3 arg1);
 extern swig_intgo _wrap_ps_call_xyz_2460481bc7b6ab28(swig_type_1 arg1, swig_type_1 arg2, swig_type_2 arg3);
+extern swig_intgo _wrap_modify_go_strings_2460481bc7b6ab28(swig_type_5 arg1);
 #undef intgo
 */
 import "C"
@@ -59,6 +62,18 @@ type _swig_fnptr *byte
 type _swig_memberptr *byte
 
 type _ sync.Mutex
+
+type swig_gostring struct {
+	p uintptr
+	n int
+}
+
+func swigCopyString(s string) string {
+	p := *(*swig_gostring)(unsafe.Pointer(&s))
+	r := string((*[0x7fffffff]byte)(unsafe.Pointer(p.p))[:p.n])
+	Swig_free(p.p)
+	return r
+}
 
 func Swig_free(arg1 uintptr) {
 	_swig_i_0 := arg1
@@ -111,5 +126,22 @@ func Ps_call(arg1 []byte, arg2 []byte, arg3 []string) (_swig_ret int) {
 	if Swig_escape_always_false {
 		Swig_escape_val = arg1
 	}
+	return swig_r
+}
+
+//Checking how to return results:
+func Modify_strings(arg1 []string) (_swig_ret int) {
+	var swig_r int
+	_swig_i_0 := arg1
+	swig_r = (int)(C._wrap_modify_go_strings_2460481bc7b6ab28(*(*C.swig_type_5)(unsafe.Pointer(&_swig_i_0))))
+
+	for i := 0; i < swig_r; i++ {
+		arg1[i] = swigCopyString(arg1[i])
+	}
+
+	if Swig_escape_always_false {
+		Swig_escape_val = arg1
+	}
+
 	return swig_r
 }
