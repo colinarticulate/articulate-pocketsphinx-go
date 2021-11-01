@@ -21,12 +21,14 @@ package xyz
 // #cgo LDFLAGS: -lpocketsphinx -lsphinxbase -lsphinxad -L /home/dbarbera/Repositories/mySphinx/debug/usr/local/lib
 
 // //Local
+#cgo CFLAGS: -g -O2 -Wall
 #cgo CFLAGS: -I${SRCDIR}/usr/local/include
 #cgo CFLAGS: -I${SRCDIR}/usr/local/include/sphinxbase
 #cgo CFLAGS: -I${SRCDIR}/usr/local/include/pocketsphinx
 #cgo CFLAGS: -Wno-unused-result -Wno-unused-but-set-variable -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable
 // //This links dynamically, so in runtime Go will have to fetch this libraries, alas no way to specify where
-#cgo LDFLAGS: -Wl,-rpath,${SRCDIR}/usr/local/lib //well, this is how to specify where to find your libraries at runtime!!!!! so, there was a way.
+////well, this is how to specify where to find your libraries at runtime!!!!! so, there was a way.
+#cgo LDFLAGS: -Wl,-rpath,${SRCDIR}/usr/local/lib
 #cgo LDFLAGS: -L${SRCDIR}/usr/local/lib -lpocketsphinx -lsphinxbase -lsphinxad
 //#cgo LDFLAGS: -L./usr/local/lib -lpocketsphinx -lsphinxbase -lsphinxad
 

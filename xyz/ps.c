@@ -241,6 +241,9 @@ int ps_call(void* jsgf_buffer, int jsgf_buffer_size, void* audio_buffer, int aud
         }
         // printf("%s\n", sresult);
         // printf("%s\n", result);
+
+        //Alternatively:
+        //memcpy(result, sresult, sizeof(char)*resultsize);
     } 
 
     free(sresult);  

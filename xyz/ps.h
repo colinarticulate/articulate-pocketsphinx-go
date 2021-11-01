@@ -130,11 +130,11 @@ recognize_from_buffered_file(void* audio_buffer, size_t bsize)
     // }
     FILE* file = NULL;
     file = fmemopen(audio_buffer, bsize ,"rb");
-    FILE* fresult = NULL;
-    fresult = fopen("./result.txt","w");
-    if (fresult == NULL ) {
-        printf("Couldn't open file for results.\n");
-    }
+    // FILE* fresult = NULL;
+    // fresult = fopen("./result.txt","w");
+    // if (fresult == NULL ) {
+    //     printf("Couldn't open file for results.\n");
+    // }
     
     //------------------- Needs better checking for wav format -----------------------------------------
     if (strlen(fname) > 4 && strcmp(fname + strlen(fname) - 4, ".wav") == 0) {
@@ -177,14 +177,14 @@ recognize_from_buffered_file(void* audio_buffer, size_t bsize)
     if (utt_started) {
         hyp = ps_get_hyp(ps, NULL);
         if (hyp != NULL) {
-    	    printf("%s\n", hyp);
-            fprintf(fresult, "%s\n", hyp);
+    	    //printf("%s\n", hyp);
+            //fprintf(fresult, "%s\n", hyp);
     	    if (print_times) {
-    		print_word_times();
+    		//print_word_times();
 	    }
 	}
     }
-    fclose(fresult);
+    //fclose(fresult);
     fclose(file);
 }
 
@@ -349,11 +349,11 @@ int retrieve_results(char *sresult){
     buffer[0]='\0';
     /* Log a backtrace if requested. */
     if (cmd_ln_boolean_r(config, "-backtrace")) {
-        FILE *fresult=NULL;
-        fresult=fopen("result.txt","w");
-        if (fresult==NULL){
-            printf("Couldn't open file for results.");
-        }
+        // FILE *fresult=NULL;
+        // fresult=fopen("result.txt","w");
+        // if (fresult==NULL){
+        //     printf("Couldn't open file for results.");
+        // }
 
         ps_seg_t *seg;
         int32 score;
@@ -361,32 +361,32 @@ int retrieve_results(char *sresult){
         const char *hyp = ps_get_hyp(ps, &score);
 
         if (hyp != NULL) {
-    	    E_INFO("%s (%d)\n", hyp, score);
+    	    //E_INFO("%s (%d)\n", hyp, score);
             sprintf(buffer, "%s*%d*", hyp, score);
             strcat(sresult, buffer);
-    	    E_INFO_NOFN("%-20s %-5s %-5s\n", "word", "start", "end");
+    	    //E_INFO_NOFN("%-20s %-5s %-5s\n", "word", "start", "end");
 
-    	    fprintf(fresult, "%s (%d)\n", hyp, score);
-            fflush(fresult);
-    	    fprintf(fresult, "%-20s %-5s %-5s\n", "word", "start", "end");
-            fflush(fresult);
+    	    // fprintf(fresult, "%s (%d)\n", hyp, score);
+            // fflush(fresult);
+    	    // fprintf(fresult, "%-20s %-5s %-5s\n", "word", "start", "end");
+            // fflush(fresult);
  
 
     	    for ( seg = ps_seg_iter(ps); seg; seg = ps_seg_next(seg) ) {
                 int sf, ef;
                 char const *word = ps_seg_word(seg);
                 ps_seg_frames(seg, &sf, &ef);
-                E_INFO_NOFN("%-20s %-5d %-5d\n", word, sf, ef);
+                //E_INFO_NOFN("%-20s %-5d %-5d\n", word, sf, ef);
                 //printf("%-20s %-5d %-5d\n", word, sf, ef);
                 //strcpy(buffer,word);
                 if (sf!=ef) { //for some obscure reason this if (meant to discard (NULL) entries) breaks the hash table when ps gets free.
                 
-                    fprintf(fresult, "%-20s %-5d %-5d\n", word, sf, ef);
+                    //fprintf(fresult, "%-20s %-5d %-5d\n", word, sf, ef);
                     sprintf(buffer, "%s,%d,%-d*", word, sf, ef);
                     strcat(sresult, buffer);
                     //printf("%s\n", sresult);
                     
-                    fflush(fresult);
+                    //fflush(fresult);
                 }
     	    }
             strcat(sresult,"*");
@@ -394,10 +394,10 @@ int retrieve_results(char *sresult){
         
         //err=fclose(fresult);
 
-        if(fclose(fresult) != 0)
-        {
-            fprintf(stderr, "Error closing file: %s", strerror(errno));
-        }
+        // if(fclose(fresult) != 0)
+        // {
+        //     fprintf(stderr, "Error closing file: %s", strerror(errno));
+        // }
 
 
 
