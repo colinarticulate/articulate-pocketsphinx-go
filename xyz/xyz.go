@@ -13,32 +13,19 @@
 package xyz
 
 /*
-// //Global:
-// #cgo CFLAGS: -I /home/dbarbera/Repositories/mySphinx/debug/usr/local/include
-// #cgo CFLAGS: -I /home/dbarbera/Repositories/mySphinx/debug/usr/local/include/sphinxbase
-// #cgo CFLAGS: -I /home/dbarbera/Repositories/mySphinx/debug/usr/local/include/pocketsphinx
-// #cgo CFLAGS: -Wno-unused-result -Wno-unused-but-set-variable -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable
-// #cgo LDFLAGS: -lpocketsphinx -lsphinxbase -lsphinxad -L /home/dbarbera/Repositories/mySphinx/debug/usr/local/lib
 
-// //Local
 #cgo CFLAGS: -g -O2 -Wall
 #cgo CFLAGS: -I${SRCDIR}/usr/local/include
 #cgo CFLAGS: -I${SRCDIR}/usr/local/include/sphinxbase
 #cgo CFLAGS: -I${SRCDIR}/usr/local/include/pocketsphinx
 #cgo CFLAGS: -Wno-unused-result -Wno-unused-but-set-variable -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable
-// //This links dynamically, so in runtime Go will have to fetch this libraries, alas no way to specify where
-////well, this is how to specify where to find your libraries at runtime!!!!! so, there was a way.
+
 #cgo LDFLAGS: -Wl,-rpath,${SRCDIR}/usr/local/lib
 #cgo LDFLAGS: -L${SRCDIR}/usr/local/lib -lpocketsphinx -lsphinxbase -lsphinxad
-//#cgo LDFLAGS: -L./usr/local/lib -lpocketsphinx -lsphinxbase -lsphinxad
 
 
-// //This should link statically so no need to fetch libraries in runtime
-// #cgo LDFLAGS: -L${SRCDIR}/usr/local/lib -l:libpocketsphinx.a -l:libsphinxbase.a -l:libsphinxad.a
-// //but then you have to specify all your sourcecode?
-//                     // "-I${fileDirname}/sphinxbase/include",
-//                     // "-I${fileDirname}/sphinxbase/include/sphinxbase",
-//                     // "-I${fileDirname}/pocketsphinx/include",
+
+
 
 
 #define intgo swig_intgo
