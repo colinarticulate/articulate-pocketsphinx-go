@@ -13,6 +13,32 @@
 package xyz
 
 /*
+// //Global:
+// #cgo CFLAGS: -I /home/dbarbera/Repositories/mySphinx/debug/usr/local/include
+// #cgo CFLAGS: -I /home/dbarbera/Repositories/mySphinx/debug/usr/local/include/sphinxbase
+// #cgo CFLAGS: -I /home/dbarbera/Repositories/mySphinx/debug/usr/local/include/pocketsphinx
+// #cgo CFLAGS: -Wno-unused-result -Wno-unused-but-set-variable -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable
+// #cgo LDFLAGS: -lpocketsphinx -lsphinxbase -lsphinxad -L /home/dbarbera/Repositories/mySphinx/debug/usr/local/lib
+
+// //Local
+#cgo CFLAGS: -I${SRCDIR}/usr/local/include
+#cgo CFLAGS: -I${SRCDIR}/usr/local/include/sphinxbase
+#cgo CFLAGS: -I${SRCDIR}/usr/local/include/pocketsphinx
+#cgo CFLAGS: -Wno-unused-result -Wno-unused-but-set-variable -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable
+// //This links dynamically, so in runtime Go will have to fetch this libraries, alas no way to specify where
+#cgo LDFLAGS: -Wl,-rpath,${SRCDIR}/usr/local/lib //well, this is how to specify where to find your libraries at runtime!!!!! so, there was a way.
+#cgo LDFLAGS: -L${SRCDIR}/usr/local/lib -lpocketsphinx -lsphinxbase -lsphinxad
+//#cgo LDFLAGS: -L./usr/local/lib -lpocketsphinx -lsphinxbase -lsphinxad
+
+
+// //This should link statically so no need to fetch libraries in runtime
+// #cgo LDFLAGS: -L${SRCDIR}/usr/local/lib -l:libpocketsphinx.a -l:libsphinxbase.a -l:libsphinxad.a
+// //but then you have to specify all your sourcecode?
+//                     // "-I${fileDirname}/sphinxbase/include",
+//                     // "-I${fileDirname}/sphinxbase/include/sphinxbase",
+//                     // "-I${fileDirname}/pocketsphinx/include",
+
+
 #define intgo swig_intgo
 typedef void *swig_voidp;
 
@@ -23,17 +49,14 @@ typedef long long intgo;
 typedef unsigned long long uintgo;
 
 
-
 typedef struct { char *p; intgo n; } _gostring_;
 typedef struct { void* array; intgo len; intgo cap; } _goslice_;
-typedef struct { _gostring_ *array; intgo len; intgo cap; } _goslicestring_;
 
 
 typedef _goslice_ swig_type_1;
 typedef _goslice_ swig_type_2;
 typedef _gostring_ swig_type_3;
 typedef _goslice_ swig_type_4;
-typedef _goslicestring_ swig_type_5;
 
 extern void _wrap_Swig_free_xyz_2460481bc7b6ab28(uintptr_t arg1);
 extern uintptr_t _wrap_Swig_malloc_xyz_2460481bc7b6ab28(swig_intgo arg1);
@@ -41,8 +64,9 @@ extern uintptr_t _wrap_Swig_malloc_xyz_2460481bc7b6ab28(swig_intgo arg1);
 extern swig_intgo _wrap_passing_bytes_xyz_2460481bc7b6ab28(swig_type_1 arg1);
 extern swig_intgo _wrap_create_file_params_nofilename_xyz_2460481bc7b6ab28(swig_type_2 arg1);
 extern swig_intgo _wrap_check_string_xyz_2460481bc7b6ab28(swig_type_3 arg1);
-extern swig_intgo _wrap_ps_call_xyz_2460481bc7b6ab28(swig_type_1 arg1, swig_type_1 arg2, swig_type_2 arg3);
-extern swig_intgo _wrap_modify_go_strings_2460481bc7b6ab28(swig_type_5 arg1);
+extern swig_intgo _wrap_ps_call_xyz_2460481bc7b6ab28(swig_type_1 arg1, swig_type_1 arg2, swig_type_2 arg3, swig_type_4 arg4);
+extern swig_intgo _wrap_modify_go_string_2460481bc7b6ab28(swig_type_4 arg1);
+extern void _wrap_mock_ps_call_2460481bc7b6ab28();
 #undef intgo
 */
 import "C"
@@ -117,12 +141,13 @@ func Check_string(arg1 string) (_swig_ret int) {
 	return swig_r
 }
 
-func Ps_call(arg1 []byte, arg2 []byte, arg3 []string) (_swig_ret int) {
+func Ps_call(arg1 []byte, arg2 []byte, arg3 []string, arg4 []string) (_swig_ret int) {
 	var swig_r int
 	_swig_i_0 := arg1
 	_swig_i_1 := arg2
 	_swig_i_2 := arg3
-	swig_r = (int)(C._wrap_ps_call_xyz_2460481bc7b6ab28((*(*C.swig_type_1)(unsafe.Pointer(&_swig_i_0))), (*(*C.swig_type_1)(unsafe.Pointer(&_swig_i_1))), (*(*C.swig_type_2)(unsafe.Pointer(&_swig_i_2)))))
+	_swig_i_3 := arg4
+	swig_r = (int)(C._wrap_ps_call_xyz_2460481bc7b6ab28((*(*C.swig_type_1)(unsafe.Pointer(&_swig_i_0))), (*(*C.swig_type_1)(unsafe.Pointer(&_swig_i_1))), (*(*C.swig_type_2)(unsafe.Pointer(&_swig_i_2))), (*(*C.swig_type_4)(unsafe.Pointer(&_swig_i_3)))))
 	if Swig_escape_always_false {
 		Swig_escape_val = arg1
 	}
@@ -130,14 +155,12 @@ func Ps_call(arg1 []byte, arg2 []byte, arg3 []string) (_swig_ret int) {
 }
 
 //Checking how to return results:
-func Modify_strings(arg1 []string) (_swig_ret int) {
+func Modify_string(arg1 []string) (_swig_ret int) {
 	var swig_r int
 	_swig_i_0 := arg1
-	swig_r = (int)(C._wrap_modify_go_strings_2460481bc7b6ab28(*(*C.swig_type_5)(unsafe.Pointer(&_swig_i_0))))
+	swig_r = (int)(C._wrap_modify_go_string_2460481bc7b6ab28(*(*C.swig_type_4)(unsafe.Pointer(&_swig_i_0))))
 
-	for i := 0; i < swig_r; i++ {
-		arg1[i] = swigCopyString(arg1[i])
-	}
+	arg1[0] = swigCopyString(arg1[0])
 
 	if Swig_escape_always_false {
 		Swig_escape_val = arg1
@@ -145,3 +168,13 @@ func Modify_strings(arg1 []string) (_swig_ret int) {
 
 	return swig_r
 }
+
+func Mock_ps_call() {
+	C._wrap_mock_ps_call_2460481bc7b6ab28()
+
+}
+
+// func main() {
+// 	var gostring = "hello from go!!!"
+// 	Check_string(gostring)
+// }
