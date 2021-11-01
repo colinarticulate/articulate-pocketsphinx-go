@@ -94,6 +94,11 @@ type swig_gostring struct {
 	n int
 }
 
+type Utt struct {
+	Text       string
+	Start, End int32
+}
+
 func swigCopyString(s string) string {
 	p := *(*swig_gostring)(unsafe.Pointer(&s))
 	r := string((*[0x7fffffff]byte)(unsafe.Pointer(p.p))[:p.n])
@@ -179,4 +184,44 @@ func Mock_ps_call() {
 // func main() {
 // 	var gostring = "hello from go!!!"
 // 	Check_string(gostring)
+// }
+
+// func Ps(jsgf_buffer []byte, audio_buffer []byte, params []string) []Utt {
+// 	result := []string{"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"}
+
+// 	Ps_call(jsgf_buffer, audio_buffer, params, result)
+
+// 	//Adapting result from coded string to utt struct
+// 	raw := strings.Split(result[0], "**")
+
+// 	fmt.Printf("%T", raw)
+// 	fields := strings.Split(raw[0], "*")
+
+// 	fmt.Println(fields)
+// 	hyp := fields[0]
+// 	header := fields[1]
+
+// 	fmt.Println(hyp)
+// 	fmt.Println(strings.Split(header, ","))
+// 	utts := []Utt{}
+// 	//var utts = make([]Utt, len(fields)-2)
+
+// 	for i := 0; i < len(fields)-2; i++ {
+// 		parts := strings.Split(fields[2:][i], ",")
+// 		phoneme := parts[0]
+// 		text_start := parts[1]
+// 		text_end := parts[2]
+// 		start, serr := strconv.Atoi(text_start)
+// 		end, eerr := strconv.Atoi(text_end)
+
+// 		if phoneme != "(NULL)" {
+// 			fmt.Println(phoneme, start, end)
+// 			utts = append(utts, Utt{phoneme, int32(start), int32(end)})
+
+// 			if serr != nil || eerr != nil {
+// 				fmt.Println(serr, eerr)
+// 			}
+// 		}
+// 	}
+// 	return utts
 // }
