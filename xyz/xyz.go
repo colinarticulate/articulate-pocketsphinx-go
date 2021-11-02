@@ -21,6 +21,7 @@ package xyz
 #cgo CFLAGS: -Wno-unused-result -Wno-unused-but-set-variable -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable
 
 #cgo LDFLAGS: -Wl,-rpath,${SRCDIR}/usr/local/lib
+#cgo LDFLAGS: -lm -lpthread
 #cgo LDFLAGS: -L${SRCDIR}/usr/local/lib -lpocketsphinx -lsphinxbase -lsphinxad
 
 
