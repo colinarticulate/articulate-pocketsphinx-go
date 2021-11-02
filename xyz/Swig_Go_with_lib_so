@@ -1,3 +1,31 @@
+backup cgo directives that worked (except for go get installations)
+/*
+
+// #cgo CFLAGS: -g -O2 -Wall
+// #cgo CFLAGS: -I${SRCDIR}/usr/local/include
+// #cgo CFLAGS: -I${SRCDIR}/usr/local/include/sphinxbase
+// #cgo CFLAGS: -I${SRCDIR}/usr/local/include/pocketsphinx
+// #cgo CFLAGS: -Wno-unused-result -Wno-unused-but-set-variable -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable
+
+// #cgo LDFLAGS: -Wl,-rpath,${SRCDIR}/usr/local/lib
+// #cgo LDFLAGS: -lm -lpthread
+// #cgo LDFLAGS: -L${SRCDIR}/usr/local/lib -lpocketsphinx -lsphinxbase -lsphinxad
+
+
+#cgo CFLAGS: -g -O2 -Wall
+#cgo CFLAGS: -I/usr/local/include
+#cgo CFLAGS: -I${SRCDIR}/usr/local/include/sphinxbase
+#cgo CFLAGS: -I${SRCDIR}/usr/local/include/pocketsphinx
+#cgo CFLAGS: -Wno-unused-result -Wno-unused-but-set-variable -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable
+
+#cgo LDFLAGS: -Wl,-rpath,${SRCDIR}/usr/local/lib
+#cgo LDFLAGS: -lm -lpthread
+#cgo LDFLAGS: -L${SRCDIR}/usr/local/lib -lpocketsphinx -lsphinxbase -lsphinxad
+*/
+
+
+
+
 Problems when installing with go get:
 go get -d github.com/davidbarbera/articulate-pocketsphinx-go/xyz
 go get -ldflags="-lm" github.com/davidbarbera/articulate-pocketsphinx-go/xyz
