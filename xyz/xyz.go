@@ -13,21 +13,7 @@
 package xyz
 
 /*
-
-#cgo CFLAGS: -g -O2 -Wall
-#cgo CFLAGS: -I${SRCDIR}/usr/local/include
-#cgo CFLAGS: -I${SRCDIR}/usr/local/include/sphinxbase
-#cgo CFLAGS: -I${SRCDIR}/usr/local/include/pocketsphinx
-#cgo CFLAGS: -Wno-unused-result -Wno-unused-but-set-variable -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable
-
-#cgo LDFLAGS: -Wl,-rpath,${SRCDIR}/usr/local/lib
-#cgo LDFLAGS: -lm -lpthread
-#cgo LDFLAGS: -L${SRCDIR}/usr/local/lib -lpocketsphinx -lsphinxbase -lsphinxad
-
-
-
-
-
+#cgo pkg-config: xyzpocketsphinx
 
 #define intgo swig_intgo
 typedef void *swig_voidp;

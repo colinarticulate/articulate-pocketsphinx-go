@@ -1,3 +1,13 @@
+Problems when installing with go get:
+go get -d github.com/davidbarbera/articulate-pocketsphinx-go/xyz
+go get -ldflags="-lm" github.com/davidbarbera/articulate-pocketsphinx-go/xyz
+go build -ldflags="-lm"
+go install -ldflags="-lm"
+LD_PRELOAD="/usr/local/lib/libxyzpocketsphinx.so /usr/local/lib/libxyzsphinxbase.so /usr/local/lib/libxyzsphinxad.so"
+go get -ldflags="-L/usr/lib/x86_64-linux-gnu/libm.so" github.com/davidbarbera/articulate-pocketsphinx-go/xyz
+LD_PRELOAD="-L/usr/lib/x86_64-linux-gnu/libm.so" go get github.com/davidbarbera/articulate-pocketsphinx-go/xyz
+LD_PRELOAD="-L/usr/lib/x86_64-linux-gnu/ -l:libm.a" go get github.com/davidbarbera/articulate-pocketsphinx-go/xyz
+
 https://stackoverflow.com/questions/10126531/swig-and-c-shared-library
 and then add the rpath
 
