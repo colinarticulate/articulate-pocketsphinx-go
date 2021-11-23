@@ -9,13 +9,13 @@
 #include <sys/select.h>
 #endif
 
-#include <sphinxbase/err.h>
-#include <sphinxbase/ad.h>
+#include <xyzsphinxbase/err.h>
+#include <xyzsphinxbase/ad.h>
 
 #include "pocketsphinx.h"
 
 POCKETSPHINX_EXPORT
-ps_decoder_t *ps_init_buffered(cmd_ln_t *config, void *buffer, size_t size);
+//ps_decoder_t *ps_init_buffered(cmd_ln_t *config, void *buffer, size_t size);
 
 // #include "sphinxbase/include/sphinxbase/err.h"
 // #include "sphinxbase/include/sphinxbase/ad.h"

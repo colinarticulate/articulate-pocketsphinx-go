@@ -15,6 +15,9 @@ package xyz
 /*
 #cgo pkg-config: xyzpocketsphinx
 #cgo CFLAGS: -Wno-unused-result -Wno-unused-but-set-variable -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable -Wno-unused-const-variable
+#cgo CFLAGS: -I/home/dbarbera/Installation_Tests/articulate-pocketsphinx/xyzpocketsphinx/include
+#cgo CFLAGS: -I/home/dbarbera/Installation_Tests/articulate-pocketsphinx/xyzsphinxbase/include
+#cgo CFLAGS: -I/home/dbarbera/Installation_Tests/articulate-pocketsphinx/xyzsphinxbase/include/sphinxbase
 
 #define intgo swig_intgo
 typedef void *swig_voidp;
