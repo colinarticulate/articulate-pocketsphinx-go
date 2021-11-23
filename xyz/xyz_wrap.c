@@ -357,13 +357,14 @@ intgo _wrap_ps_call_xyz_2460481bc7b6ab28(_goslice_ _swig_go_0, _goslice_ _swig_g
   
   arg5 = _swig_go_2.len;
   a = (_gostring_*) _swig_go_2.array;
-  arg6 = (char **) malloc ((arg5 ) * sizeof (char *));
+  arg6 = (char **) malloc ((arg5) * sizeof (char *));
   for ( i = 0; i < arg5; i++) {
     _gostring_ *ps = &a[i];
     arg6[i] = (char*)malloc( ((int)(ps->n) + 1)*sizeof(char));
     memcpy(arg6[i],(char*) ps->p, (int)(ps->n) );
     arg6[i][ps->n]='\0';
   }
+  //arg6[arg5]=NULL;
 
   char *arg7 = (char *) 0 ;
   int arg8 ;

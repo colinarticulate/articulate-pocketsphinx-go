@@ -55,7 +55,6 @@ static const arg_t cont_args_def[] = {
 static ps_decoder_t *ps;
 static cmd_ln_t *config;
 static FILE *rawfd;
-//static char *result;
 
 typedef struct result_s result_t;
 
@@ -110,76 +109,12 @@ check_wav_header(char *header, int expected_sr)
     return 1;
 }
 
-// // //void retrieve_results(ps_decoder_t *ps){
-int retrieve_results(char *sresult){
-
-    char buffer[256];
-    buffer[0]='\0';
-    /* Log a backtrace if requested. */
-    if (cmd_ln_boolean_r(config, "-backtrace")) {
-        // FILE *fresult=NULL;
-        // fresult=fopen("result.txt","w");
-        // if (fresult==NULL){
-        //     printf("Couldn't open file for results.");
-        // }
-
-        ps_seg_t *seg;
-        int32 score;
-
-        const char *hyp = ps_get_hyp(ps, &score);
-
-        if (hyp != NULL) {
-    	    //E_INFO("%s (%d)\n", hyp, score);
-            sprintf(buffer, "%s*%d*", hyp, score);
-            strcat(sresult, buffer);
-    	    //E_INFO_NOFN("%-20s %-5s %-5s\n", "word", "start", "end");
-
-    	    // fprintf(fresult, "%s (%d)\n", hyp, score);
-            // fflush(fresult);
-    	    // fprintf(fresult, "%-20s %-5s %-5s\n", "word", "start", "end");
-            // fflush(fresult);
- 
-
-    	    for ( seg = ps_seg_iter(ps); seg; seg = ps_seg_next(seg) ) {
-                int sf, ef;
-                char const *word = ps_seg_word(seg);
-                ps_seg_frames(seg, &sf, &ef);
-                //E_INFO_NOFN("%-20s %-5d %-5d\n", word, sf, ef);
-                //printf("%-20s %-5d %-5d\n", word, sf, ef);
-                //strcpy(buffer,word);
-                if (sf!=ef) { //for some obscure reason this if (meant to discard (NULL) entries) breaks the hash table when ps gets free.
-                
-                    //fprintf(fresult, "%-20s %-5d %-5d\n", word, sf, ef);
-                    sprintf(buffer, "%s,%d,%-d*", word, sf, ef);
-                    strcat(sresult, buffer);
-                    //printf("%s\n", sresult);
-                    
-                    //fflush(fresult);
-                }
-    	    }
-            strcat(sresult,"*");
-        }
-        
-        //err=fclose(fresult);
-
-        // if(fclose(fresult) != 0)
-        // {
-        //     fprintf(stderr, "Error closing file: %s", strerror(errno));
-        // }
-
-
-
-    } 
-
-    return strlen(sresult);
-}
-
 
 /*
  * Continuous recognition from a buffered file
  */
-static int
-recognize_from_buffered_file(void* audio_buffer, size_t bsize, char *result)
+static void
+recognize_from_buffered_file(void* audio_buffer, size_t bsize)
 {
     int16 adbuf[2048];
     const char *fname;
@@ -187,7 +122,6 @@ recognize_from_buffered_file(void* audio_buffer, size_t bsize, char *result)
     int32 k;
     uint8 utt_started, in_speech;
     int32 print_times = cmd_ln_boolean_r(config, "-time");
-    int result_size=0;
 
 
 
@@ -217,21 +151,24 @@ recognize_from_buffered_file(void* audio_buffer, size_t bsize, char *result)
 	E_FATAL("Can not decode mp3 files, convert input file to WAV 16kHz 16-bit mono before decoding.\n");
     }
     //---------------------------------------------------------------------------------------------------
-    int rv;
+    
     ps_start_utt(ps);
     utt_started = FALSE;
+
     while ((k = fread(adbuf, sizeof(int16), 2048, file)) > 0) {
+        //printf("Read %d samples\n",k);
         ps_process_raw(ps, adbuf, k, FALSE, FALSE);
         in_speech = ps_get_in_speech(ps);
+        //printf("(in_speech, utt_started) = (%d,%d)\n", in_speech, utt_started);
         if (in_speech && !utt_started) {
             utt_started = TRUE;
         } 
         if (!in_speech && utt_started) {
             ps_end_utt(ps);
-            //hyp = ps_get_hyp(ps, NULL);
-            result_size = retrieve_results(result);
-            // if (hyp != NULL)
-        	// printf("%s\n", hyp);
+            hyp = ps_get_hyp(ps, NULL);
+            //printf("here\n");
+            if (hyp != NULL)
+        	printf(">>> hypothesis: %s\n", hyp);
             
             if (print_times)
         	print_word_times();
@@ -243,23 +180,17 @@ recognize_from_buffered_file(void* audio_buffer, size_t bsize, char *result)
     }
     ps_end_utt(ps);
     if (utt_started) {
-
-        //hyp = ps_get_hyp(ps, NULL);
-        result_size = retrieve_results(result);
-    //     if (hyp != NULL) {
-    // 	    printf("%s\n", hyp);
-    //         //fprintf(fresult, "%s\n", hyp);
-    // 	    if (print_times) {
-    // 		print_word_times();
-	//     }
-	// }
+        hyp = ps_get_hyp(ps, NULL);
+        if (hyp != NULL) {
+    	    //printf("%s\n", hyp);
+            //fprintf(fresult, "%s\n", hyp);
+    	    if (print_times) {
+    		//print_word_times();
+	    }
+	}
     }
     //fclose(fresult);
-
-
     fclose(file);
-    return result_size;
-
 }
 
 /*
@@ -416,7 +347,69 @@ recognize_from_microphone()
 // }
 
 
+// // //void retrieve_results(ps_decoder_t *ps){
+int retrieve_results(char *sresult){
 
+    char buffer[256];
+    buffer[0]='\0';
+    /* Log a backtrace if requested. */
+    if (cmd_ln_boolean_r(config, "-backtrace")) {
+        // FILE *fresult=NULL;
+        // fresult=fopen("result.txt","w");
+        // if (fresult==NULL){
+        //     printf("Couldn't open file for results.");
+        // }
+
+        ps_seg_t *seg;
+        int32 score;
+
+        const char *hyp = ps_get_hyp(ps, &score);
+
+        if (hyp != NULL) {
+    	    //E_INFO("%s (%d)\n", hyp, score);
+            sprintf(buffer, "%s*%d*", hyp, score);
+            strcat(sresult, buffer);
+    	    //E_INFO_NOFN("%-20s %-5s %-5s\n", "word", "start", "end");
+
+    	    // fprintf(fresult, "%s (%d)\n", hyp, score);
+            // fflush(fresult);
+    	    // fprintf(fresult, "%-20s %-5s %-5s\n", "word", "start", "end");
+            // fflush(fresult);
+ 
+
+    	    for ( seg = ps_seg_iter(ps); seg; seg = ps_seg_next(seg) ) {
+                int sf, ef;
+                char const *word = ps_seg_word(seg);
+                ps_seg_frames(seg, &sf, &ef);
+                //E_INFO_NOFN("%-20s %-5d %-5d\n", word, sf, ef);
+                //printf("%-20s %-5d %-5d\n", word, sf, ef);
+                //strcpy(buffer,word);
+                if (sf!=ef) { //for some obscure reason this if (meant to discard (NULL) entries) breaks the hash table when ps gets free.
+                
+                    //fprintf(fresult, "%-20s %-5d %-5d\n", word, sf, ef);
+                    sprintf(buffer, "%s,%d,%-d*", word, sf, ef);
+                    strcat(sresult, buffer);
+                    //printf("%s\n", sresult);
+                    
+                    //fflush(fresult);
+                }
+    	    }
+            strcat(sresult,"*");
+        }
+        
+        //err=fclose(fresult);
+
+        // if(fclose(fresult) != 0)
+        // {
+        //     fprintf(stderr, "Error closing file: %s", strerror(errno));
+        // }
+
+
+
+    } 
+
+    return strlen(sresult);
+}
 
 
 int ps_call_from_go(void* jsgf_buffer, size_t jsgf_buffer_size, void* audio_buffer, size_t audio_buffer_size, int argc, char *argv[], char* sresult)
@@ -449,15 +442,14 @@ int ps_call_from_go(void* jsgf_buffer, size_t jsgf_buffer_size, void* audio_buff
 
     if (cmd_ln_str_r(config, "-infile") != NULL) {
         //recognize_from_file();
-        stringsize = recognize_from_buffered_file(audio_buffer, audio_buffer_size, sresult);
+        recognize_from_buffered_file(audio_buffer, audio_buffer_size);
     } else if (cmd_ln_boolean_r(config, "-inmic")) {
         recognize_from_microphone();
     } else {
         recognize_from_file();
     }
 
-    //stringsize = retrieve_results(sresult);
-
+    stringsize = retrieve_results(sresult);
     /* Log a backtrace if requested. */
     // if (cmd_ln_boolean_r(config, "-backtrace")) {
     //     ps_seg_t *seg;

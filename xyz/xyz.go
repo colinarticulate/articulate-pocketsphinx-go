@@ -13,16 +13,53 @@
 package xyz
 
 /*
-#cgo pkg-config: xyzpocketsphinx
-#cgo CFLAGS: -Wno-unused-result -Wno-unused-but-set-variable -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable -Wno-unused-const-variable
-#cgo CFLAGS: -I/home/dbarbera/Installation_Tests/articulate-pocketsphinx/xyzpocketsphinx/include
-#cgo CFLAGS: -I/home/dbarbera/Installation_Tests/articulate-pocketsphinx/xyzsphinxbase/include
-#cgo CFLAGS: -I/home/dbarbera/Installation_Tests/articulate-pocketsphinx/xyzsphinxbase/include/sphinxbase
+//#cgo pkg-config: xyzpocketsphinx
+#cgo CFLAGS: -g -O2 -Wall
+#cgo CFLAGS: -I${SRCDIR}
+#cgo CFLAGS: -I/usr/local/include/xyzpocketsphinx
+#cgo CFLAGS: -I/usr/local/include/xyzsphinxbase
+
+
+// #cgo CFLAGS: -I${SRCDIR}/../../xyzsphinxbase/include
+// #cgo CFLAGS: -I${SRCDIR}/../../xyzsphinxbase/include/xyzsphinxbase
+// #cgo CFLAGS: -I${SRCDIR}/../../xyzsphinxbase/src/libsphinxad
+// #cgo CFLAGS: -I${SRCDIR}/../../xyzsphinxbase/src/libsphinxbase
+// #cgo CFLAGS: -I${SRCDIR}/../../xyzsphinxbase/src/libsphinxbase/fe
+// #cgo CFLAGS: -I${SRCDIR}/../../xyzsphinxbase/src/libsphinxbase/feat
+// #cgo CFLAGS: -I${SRCDIR}/../../xyzsphinxbase/src/libsphinxbase/lm
+// #cgo CFLAGS: -I${SRCDIR}/../../xyzsphinxbase/src/libsphinxbase/util
+
+
+// #cgo CFLAGS: -I${SRCDIR}/../../xyzpocketsphinx/include
+// #cgo CFLAGS: -I${SRCDIR}/../../xyzpocketsphinx/src/libpocketsphinx
+
+
+
+#cgo CFLAGS: -Wno-unused-result -Wno-unused-but-set-variable -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable
+#cgo LDFLAGS: -lm -lpthread
+
+// #cgo CFLAGS: -I${SRCDIR}/../../xyzsphinxbase
+// #cgo CFLAGS: -I${SRCDIR}/../../xyzsphinxbase/include
+// #cgo CFLAGS: -I${SRCDIR}/../../xyzsphinxbase/include/xyzsphinxbase
+// #cgo CFLAGS: -I${SRCDIR}/../../xyzpocketsphinx
+// #cgo CFLAGS: -I${SRCDIR}/../../xyzpocketsphinx/include
+
+// // #cgo CFLAGS: -Wno-unused-result -Wno-unused-but-set-variable -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable
+
+
+// #cgo CFLAGS: -I/usr/local/include/xyzsphinxbase
+// #cgo CFLAGS: -I/usr/local/include/xyzpocketsphinx
+
+#cgo LDFLAGS: -L/usr/local/lib/ -lxyzpocketsphinx -lxyzsphinxbase -lxyzsphinxad
+//#cgo LDFLAGS: -lm -lpthread
+
+
 
 #define intgo swig_intgo
 typedef void *swig_voidp;
 
 #include <stdint.h>
+#include <stdlib.h>
 
 
 typedef long long intgo;
@@ -79,7 +116,11 @@ type Utt struct {
 
 func swigCopyString(s string) string {
 	p := *(*swig_gostring)(unsafe.Pointer(&s))
-	r := string((*[0x7fffffff]byte)(unsafe.Pointer(p.p))[:p.n])
+	//r := string((*[0x7fffffff]byte)(unsafe.Pointer(p.p))[:p.n])
+	r := string((*[1 << 28]byte)(unsafe.Pointer(p.p))[:p.n])
+
+	//go1.17:
+
 	Swig_free(p.p)
 	return r
 }
