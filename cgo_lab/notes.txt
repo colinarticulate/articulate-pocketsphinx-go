@@ -1,0 +1,12 @@
+cgo and the best way of marshalling between C and Go
+
+
+Reference article:
+https://golang.design/research/cgo-handle/
+
+Code and Documentation:
+https://go-review.googlesource.com/c/go/+/295369/13/src/runtime/cgo/handle.go
+https://go-review.googlesource.com/c/go/+/295369/
+
+More examples and explanations:
+https://zchee.github.io/golang-wiki/cgo/

@@ -118,6 +118,7 @@ func swigCopyString(s string) string {
 	p := *(*swig_gostring)(unsafe.Pointer(&s))
 	//r := string((*[0x7fffffff]byte)(unsafe.Pointer(p.p))[:p.n])
 	r := string((*[1 << 28]byte)(unsafe.Pointer(p.p))[:p.n])
+	// slice := unsafe.Slice(theCArray, length) // Go 1.17
 
 	//go1.17:
 
