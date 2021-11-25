@@ -4,8 +4,8 @@ package main
 // #include <stdlib.h>
 // #include <stdint.h> // for uintptr_t
 //
-// //extern void MyGoPrint(uintptr_t handle);
-// extern char* GoBytes(uintptr_t handle);
+// extern void MyGoPrint(uintptr_t handle);
+// //extern char* GoBytes(uintptr_t handle);
 // void myprint_with_handle(uintptr_t handle);
 //
 //
@@ -44,14 +44,13 @@ func print_from_c(s string) {
 	C.free(unsafe.Pointer(cs))
 }
 
-// //export MyGoPrint
-// func MyGoPrint(handle C.uintptr_t) {
-// 	h := cgo.Handle(handle)
-// 	s := h.Value().(string)
-// 	h.Delete()
-// 	println(s)
-
-// }
+//export MyGoPrint
+func MyGoPrint(handle C.uintptr_t) {
+	h := cgo.Handle(handle)
+	s := h.Value().(string)
+	h.Delete()
+	println(s)
+}
 
 //export GoBytes
 func GoBytes(handle C.uintptr_t) *C.char {
@@ -76,10 +75,12 @@ func main() {
 
 	// 	argv := []string{"one", "two", "three"}
 	//
-	print_from_c("I printf whatever I want from go")
+	fmt.Println("hello there (fmt.Println)")
 	print_from_c_with_handle("This is a printf from c using a handle")
-	println("hello there")
-	fmt.Println("hello there")
+
+	print_from_c("I printf whatever I want from go")
+
+	println("hello there (println)")
 }
 
 /*
