@@ -13,11 +13,11 @@
 package xyz_plus
 
 /*
-//#cgo pkg-config: xyzpocketsphinx
+#cgo pkg-config: xyzpocketsphinx
 #cgo CFLAGS: -g -O2 -Wall
-#cgo CFLAGS: -I${SRCDIR}
-#cgo CFLAGS: -I/usr/local/include/xyzpocketsphinx
-#cgo CFLAGS: -I/usr/local/include/xyzsphinxbase
+// #cgo CFLAGS: -I${SRCDIR}
+// #cgo CFLAGS: -I/usr/local/include/xyzpocketsphinx
+// #cgo CFLAGS: -I/usr/local/include/xyzsphinxbase
 
 
 // #cgo CFLAGS: -I${SRCDIR}/../../xyzsphinxbase/include

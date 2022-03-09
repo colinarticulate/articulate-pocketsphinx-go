@@ -8,9 +8,9 @@
  * interface file instead.
  * ----------------------------------------------------------------------------- */
 
-/* source: xyz.i */
+/* source: xyz_plus.i */
 
-#define SWIGMODULE xyz
+#define SWIGMODULE xyz_plus
 /* -----------------------------------------------------------------------------
  *  This section contains generic SWIG labels for method/variable
  *  declarations/attributes, and other compiler dependent labels.
@@ -378,12 +378,12 @@ intgo _wrap_ps_plus_call_xyz_2460481bc7b6ab28(_goslice_ _swig_go_0, _goslice_ _s
     a = (_gostring_*) _swig_go_3.array;
     p = a[0].p;
     n = a[0].n;
-    arg7 = malloc(n + 1);
+    arg7 = (char*)malloc(n + 1);
     arg8 = n;
     memcpy(arg7, p, n);
   }
  
-  result = (int)ps_call(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8);
+  result = (int)ps_plus_call(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8);
   _swig_go_result = result; 
 
   {
