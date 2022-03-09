@@ -8,7 +8,7 @@
  * interface file instead.
  * ----------------------------------------------------------------------------- */
 
-// source: xyz.i
+// source: xyz_plus.i
 
 package xyz_plus
 
