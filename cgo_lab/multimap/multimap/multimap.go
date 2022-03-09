@@ -10,7 +10,7 @@
 
 // source: example.i
 
-package example
+package multimap
 
 /*
 #define intgo swig_intgo
@@ -31,13 +31,13 @@ typedef struct { void* array; intgo len; intgo cap; } _goslice_;
 typedef _goslice_ swig_type_1;
 typedef _gostring_ swig_type_2;
 typedef _goslice_ swig_type_3;
-extern void _wrap_Swig_free_example_4b8d420d51dbbfe7(uintptr_t arg1);
-extern uintptr_t _wrap_Swig_malloc_example_4b8d420d51dbbfe7(swig_intgo arg1);
-extern swig_intgo _wrap_gcd_example_4b8d420d51dbbfe7(swig_intgo arg1, swig_intgo arg2);
-extern swig_intgo _wrap_gcdmain_example_4b8d420d51dbbfe7(swig_type_1 arg1);
-extern swig_intgo _wrap_count_example_4b8d420d51dbbfe7(swig_type_2 arg1, char arg2);
-extern void _wrap_capitalize_example_4b8d420d51dbbfe7(swig_type_3 arg1);
-extern void _wrap_circle_example_4b8d420d51dbbfe7(double arg1, double arg2);
+extern void _wrap_Swig_free_multimap_dc9c0082b1a8d829(uintptr_t arg1);
+extern uintptr_t _wrap_Swig_malloc_multimap_dc9c0082b1a8d829(swig_intgo arg1);
+extern swig_intgo _wrap_gcd_multimap_dc9c0082b1a8d829(swig_intgo arg1, swig_intgo arg2);
+extern swig_intgo _wrap_gcdmain_multimap_dc9c0082b1a8d829(swig_type_1 arg1);
+extern swig_intgo _wrap_count_multimap_dc9c0082b1a8d829(swig_type_2 arg1, char arg2);
+extern void _wrap_capitalize_multimap_dc9c0082b1a8d829(swig_type_3 arg1);
+extern void _wrap_circle_multimap_dc9c0082b1a8d829(double arg1, double arg2);
 #undef intgo
 */
 import "C"
@@ -72,13 +72,13 @@ func swigCopyString(s string) string {
 
 func Swig_free(arg1 uintptr) {
 	_swig_i_0 := arg1
-	C._wrap_Swig_free_example_4b8d420d51dbbfe7(C.uintptr_t(_swig_i_0))
+	C._wrap_Swig_free_multimap_dc9c0082b1a8d829(C.uintptr_t(_swig_i_0))
 }
 
 func Swig_malloc(arg1 int) (_swig_ret uintptr) {
 	var swig_r uintptr
 	_swig_i_0 := arg1
-	swig_r = (uintptr)(C._wrap_Swig_malloc_example_4b8d420d51dbbfe7(C.swig_intgo(_swig_i_0)))
+	swig_r = (uintptr)(C._wrap_Swig_malloc_multimap_dc9c0082b1a8d829(C.swig_intgo(_swig_i_0)))
 	return swig_r
 }
 
@@ -86,14 +86,14 @@ func Gcd(arg1 int, arg2 int) (_swig_ret int) {
 	var swig_r int
 	_swig_i_0 := arg1
 	_swig_i_1 := arg2
-	swig_r = (int)(C._wrap_gcd_example_4b8d420d51dbbfe7(C.swig_intgo(_swig_i_0), C.swig_intgo(_swig_i_1)))
+	swig_r = (int)(C._wrap_gcd_multimap_dc9c0082b1a8d829(C.swig_intgo(_swig_i_0), C.swig_intgo(_swig_i_1)))
 	return swig_r
 }
 
 func Gcdmain(arg1 []string) (_swig_ret int) {
 	var swig_r int
 	_swig_i_0 := arg1
-	swig_r = (int)(C._wrap_gcdmain_example_4b8d420d51dbbfe7(*(*C.swig_type_1)(unsafe.Pointer(&_swig_i_0))))
+	swig_r = (int)(C._wrap_gcdmain_multimap_dc9c0082b1a8d829(*(*C.swig_type_1)(unsafe.Pointer(&_swig_i_0))))
 	if Swig_escape_always_false {
 		Swig_escape_val = arg1
 	}
@@ -104,7 +104,7 @@ func Count(arg1 string, arg2 byte) (_swig_ret int) {
 	var swig_r int
 	_swig_i_0 := arg1
 	_swig_i_1 := arg2
-	swig_r = (int)(C._wrap_count_example_4b8d420d51dbbfe7(*(*C.swig_type_2)(unsafe.Pointer(&_swig_i_0)), C.char(_swig_i_1)))
+	swig_r = (int)(C._wrap_count_multimap_dc9c0082b1a8d829(*(*C.swig_type_2)(unsafe.Pointer(&_swig_i_0)), C.char(_swig_i_1)))
 	if Swig_escape_always_false {
 		Swig_escape_val = arg1
 	}
@@ -113,7 +113,7 @@ func Count(arg1 string, arg2 byte) (_swig_ret int) {
 
 func Capitalize(arg1 []string) {
 	_swig_i_0 := arg1
-	C._wrap_capitalize_example_4b8d420d51dbbfe7(*(*C.swig_type_3)(unsafe.Pointer(&_swig_i_0)))
+	C._wrap_capitalize_multimap_dc9c0082b1a8d829(*(*C.swig_type_3)(unsafe.Pointer(&_swig_i_0)))
 
 	arg1[0] = swigCopyString(arg1[0])
 
@@ -125,7 +125,7 @@ func Capitalize(arg1 []string) {
 func Circle(arg1 float64, arg2 float64) {
 	_swig_i_0 := arg1
 	_swig_i_1 := arg2
-	C._wrap_circle_example_4b8d420d51dbbfe7(C.double(_swig_i_0), C.double(_swig_i_1))
+	C._wrap_circle_multimap_dc9c0082b1a8d829(C.double(_swig_i_0), C.double(_swig_i_1))
 }
 
 

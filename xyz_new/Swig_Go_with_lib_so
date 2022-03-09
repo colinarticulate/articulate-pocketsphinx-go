@@ -1,0 +1,558 @@
+backup cgo directives that worked (except for go get installations)
+/*
+
+// #cgo CFLAGS: -g -O2 -Wall
+// #cgo CFLAGS: -I${SRCDIR}/usr/local/include
+// #cgo CFLAGS: -I${SRCDIR}/usr/local/include/sphinxbase
+// #cgo CFLAGS: -I${SRCDIR}/usr/local/include/pocketsphinx
+// #cgo CFLAGS: -Wno-unused-result -Wno-unused-but-set-variable -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable
+
+// #cgo LDFLAGS: -Wl,-rpath,${SRCDIR}/usr/local/lib
+// #cgo LDFLAGS: -lm -lpthread
+// #cgo LDFLAGS: -L${SRCDIR}/usr/local/lib -lpocketsphinx -lsphinxbase -lsphinxad
+
+
+#cgo CFLAGS: -g -O2 -Wall
+#cgo CFLAGS: -I/usr/local/include
+#cgo CFLAGS: -I${SRCDIR}/usr/local/include/sphinxbase
+#cgo CFLAGS: -I${SRCDIR}/usr/local/include/pocketsphinx
+#cgo CFLAGS: -Wno-unused-result -Wno-unused-but-set-variable -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable
+
+#cgo LDFLAGS: -Wl,-rpath,${SRCDIR}/usr/local/lib
+#cgo LDFLAGS: -lm -lpthread
+#cgo LDFLAGS: -L${SRCDIR}/usr/local/lib -lpocketsphinx -lsphinxbase -lsphinxad
+*/
+
+
+
+
+Problems when installing with go get:
+go get -d github.com/davidbarbera/articulate-pocketsphinx-go/xyz
+go get -ldflags="-lm" github.com/davidbarbera/articulate-pocketsphinx-go/xyz
+go build -ldflags="-lm"
+go install -ldflags="-lm"
+LD_PRELOAD="/usr/local/lib/libxyzpocketsphinx.so /usr/local/lib/libxyzsphinxbase.so /usr/local/lib/libxyzsphinxad.so"
+go get -ldflags="-L/usr/lib/x86_64-linux-gnu/libm.so" github.com/davidbarbera/articulate-pocketsphinx-go/xyz
+LD_PRELOAD="-L/usr/lib/x86_64-linux-gnu/libm.so" go get github.com/davidbarbera/articulate-pocketsphinx-go/xyz
+LD_PRELOAD="-L/usr/lib/x86_64-linux-gnu/ -l:libm.a" go get github.com/davidbarbera/articulate-pocketsphinx-go/xyz
+
+https://stackoverflow.com/questions/10126531/swig-and-c-shared-library
+and then add the rpath
+
+>$ swig -go -cgo -intgosize xyz.i
+
+replace xyz.go and xyz_wrap.c with respective files manually fixed
+
+>$
+gcc -g -O2 -Wall -Wl,-rpath=./local/lib -fPIC -Wextra \
+-Wno-unused-function \
+-I./local/include/ \
+-I./local/include/sphinxbase \
+-I./local/include/pocketsphinx \
+-I/usr/include \
+-lpthread -lm \
+-L./local/lib -lpocketsphinx -lsphinxbase -lsphinxad \
+-shared xyz_wrap.c -o xyz.so
+
+or static:
+>$ gcc -g -O2 -Wall -Wl,-rpath=./local/lib -fPIC -Wextra \
+-Wno-unused-function \
+-I./local/include/ \
+-I./local/include/sphinxbase \
+-I./local/include/pocketsphinx \
+-I/usr/include \
+-lpthread -lm \
+-L./local/lib -lpocketsphinx -lsphinxbase -lsphinxad \
+-c xyz_wrap.c -o xyz.o
+>$ ar rcs xyz.a xyz.o
+
+
+
+>$
+go install or go build
+
+go build \
+-I./local/include/ \
+-I./local/include/sphinxbase \
+-I./local/include/pocketsphinx \
+
+
+go install -gcflags \
+'-g -O2 -Wall -Wl,-rpath=./local/lib -fPIC -Wextra \
+-Wno-unused-function \
+-I./local/include/ \
+-I./local/include/sphinxbase \
+-I./local/include/pocketsphinx \
+-I/usr/include' \
+-ldflags \
+'-lpthread -lm \
+-L./local/lib -lpocketsphinx -lsphinxbase -lsphinxad'
+
+go build  -buildmode=shared
+
+
+go build -gccgoflags -g -O2 -Wall -Wl,-rpath=./local/lib -fPIC -Wextra \
+-Wno-unused-function \
+-I./local/include/ \
+-I./local/include/sphinxbase \
+-I./local/include/pocketsphinx \
+-I/usr/include \
+-lpthread -lm \
+-L./local/lib -lpocketsphinx -lsphinxbase -lsphinxad \
+-shared xyz_wrap.c -o xyz.so
+
+
+https://dh1tw.de/2019/12/cross-compiling-golang-cgo-projects/
+go build -gcflags="-g -O2 -Wall -Wl,-rpath=./local/lib -fPIC -Wextra \
+-Wno-unused-function -I./local/include/ \
+-I./local/include/sphinxbase \
+-I./local/include/pocketsphinx -I/usr/include" \
+-ldflags="-lpthread -lm -L./local/lib -lpocketsphinx -lsphinxbase -lsphinxad"
+
+
+
+https://dave.cheney.net/2014/06/04/what-does-go-build-build
+
+https://stackoverflow.com/questions/38381357/how-to-point-to-c-header-files-in-go
+CGO_CFLAGS="-g -O2 -Wall -Wl,-rpath=./local/lib -fPIC -Wextra \
+-Wno-unused-function -I./local/include/ \
+-I./local/include/sphinxbase \
+-I./local/include/pocketsphinx -I/usr/include" go build
+
+CGO_CFLAGS="-g -O2 -Wall -Wl,-rpath=$(pwd)/local/lib -fPIC -Wextra \
+-Wno-unused-result \
+-Wno-unused-but-set-variable \
+-Wno-unused-function \
+-Wno-unused-parameter \
+-Wno-unused-variable \
+-I$(pwd)/local/include/ \
+-I$(pwd)/local/include/sphinxbase \
+-I$(pwd)/local/include/pocketsphinx \
+-I/usr/include" \
+go build
+-o xyz ./
+https://forum.golangbridge.org/t/whats-the-correct-go-build-syntax-to-build-main-module-in-a-subdirectory-without-changing-working-directory/16034
+go build -ldflags "-linkmode external -extldflags -static" -a
+
+go build
+CGO_LDFLAGS= "-lpthread -lm \
+-L./local/lib -lpocketsphinx -lsphinxbase -lsphinxad" \
+
+
+
+
+CGO_CFLAGS="-g -O2 -Wall -Wl,-rpath=$(pwd)/local/lib -fPIC -Wextra \
+-Wno-unused-result \
+-Wno-unused-but-set-variable \
+-Wno-unused-function \
+-Wno-unused-parameter \
+-Wno-unused-variable \
+-I$(pwd)/local/include/ \
+-I$(pwd)/local/include/sphinxbase \
+-I$(pwd)/local/include/pocketsphinx \
+-I/usr/include -lpthread -lm \
+-L./local/lib -lpocketsphinx -lsphinxbase -lsphinxad" \
+go build
+
+
+
+CGO_CFLAGS="-g -O2 -Wall -Wl,-rpath=$(pwd)/local/lib \
+-Wno-unused-result \
+-Wno-unused-but-set-variable \
+-Wno-unused-function \
+-Wno-unused-parameter \
+-Wno-unused-variable \
+-I$(pwd)/local/include/ \
+-I$(pwd)/local/include/sphinxbase \
+-I$(pwd)/local/include/pocketsphinx \
+-I/usr/include -lpthread -lm" \
+go build
+
+
+Minimal to still get stuck at linking
+CGO_CFLAGS="-g -O2 -Wall -Wl,-rpath=$(pwd)/local/lib \
+-Wno-unused-result \
+-Wno-unused-but-set-variable \
+-Wno-unused-function \
+-Wno-unused-parameter \
+-Wno-unused-variable \
+-I$(pwd)/local/include/ \
+-I$(pwd)/local/include/sphinxbase \
+-I$(pwd)/local/include/pocketsphinx" \
+go build
+
+
+
+This worked!!!!!!!!:
+CGO_CFLAGS="-g -O2 -Wall -Wl,-rpath=$(pwd)/local/lib -fPIC -Wextra \
+-Wno-unused-result \
+-Wno-unused-but-set-variable \
+-Wno-unused-function \
+-Wno-unused-parameter \
+-Wno-unused-variable \
+-I$(pwd)/usr/local/include/ \
+-I$(pwd)/usr/local/include/sphinxbase \
+-I$(pwd)/usr/local/include/pocketsphinx" \
+CGO_LDFLAGS="-L$(pwd)/usr/local/lib -lpocketsphinx -lsphinxbase -lsphinxad" \
+go build
+
+for a system installation:
+CGO_CFLAGS="-g -O2 -Wall -Wl,-rpath=/usr/local/lib -fPIC -Wextra \
+-Wno-unused-result \
+-Wno-unused-but-set-variable \
+-Wno-unused-function \
+-Wno-unused-parameter \
+-Wno-unused-variable \
+-I$(pwd)/usr/local/include/ \
+-I$(pwd)/usr/local/include/sphinxbase \
+-I$(pwd)/usr/local/include/pocketsphinx" \
+CGO_LDFLAGS="-L$/usr/local/lib -lxyzpocketsphinx -lxyzsphinxbase -lxyzsphinxad" \
+go build
+
+second version without rpath:
+CGO_CFLAGS="-g -O2 -Wall -fPIC -Wextra \
+-Wno-unused-result \
+-Wno-unused-but-set-variable \
+-Wno-unused-function \
+-Wno-unused-parameter \
+-Wno-unused-variable \
+-I$(pwd)/usr/local/include/ \
+-I$(pwd)/usr/local/include/sphinxbase \
+-I$(pwd)/usr/local/include/pocketsphinx" \
+CGO_LDFLAGS="-L$(pwd)/usr/local/lib -lpocketsphinx -lsphinxbase -lsphinxad" \
+go build
+
+so, if that worked then this too:
+CGO_CFLAGS="-g -O2 -Wall -Wl,-rpath=$(pwd)/usr/local/lib -fPIC -Wextra \
+-Wno-unused-result \
+-Wno-unused-but-set-variable \
+-Wno-unused-function \
+-Wno-unused-parameter \
+-Wno-unused-variable \
+-I$(pwd)/usr/local/include/ \
+-I$(pwd)/usr/local/include/sphinxbase \
+-I$(pwd)/usr/local/include/pocketsphinx" \
+CGO_LDFLAGS="-L$(pwd)/usr/local/lib -lpocketsphinx -lsphinxbase -lsphinxad" \
+go install
+
+Solution inspired by:
+https://stackoverflow.com/questions/28710276/override-an-external-packages-cgo-compiler-and-linker-flags
+
+
+For the caller if libraries are not in the system:
+go build -gcflags "-g -O2 -Wall \
+-Wno-unused-result \
+-Wno-unused-but-set-variable \
+-Wno-unused-function \
+-Wno-unused-parameter \
+-Wno-unused-variable \
+-I/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/include/ \
+-I/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/include/sphinxbase \
+-I/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/include/pocketsphinx" \
+-ldflags "-L/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/lib -lpocketsphinx -lsphinxbase -lsphinxad"
+
+
+go build -gcflags "-g -O2 -Wall \
+-Wno-unused-result \
+-Wno-unused-but-set-variable \
+-Wno-unused-function \
+-Wno-unused-parameter \
+-Wno-unused-variable \
+-I/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/include/ \
+-I/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/include/sphinxbase \
+-I/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/include/pocketsphinx"
+
+This worked for the caller!!!:
+CGO_CFLAGS="-g -O2 -Wall \
+-Wno-unused-result \
+-Wno-unused-but-set-variable \
+-Wno-unused-function \
+-Wno-unused-parameter \
+-Wno-unused-variable \
+-I/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/include/ \
+-I/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/include/sphinxbase \
+-I/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/include/pocketsphinx" \
+CGO_LDFLAGS="-L/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/lib -lpocketsphinx -lsphinxbase -lsphinxad" \
+go build
+
+but then:
+fjsgf []uint8, 1533
+fwav []uint8, 62926
+Params: []string, 77
+./../data/kl_ay_m__from_c.jsgf
+./../data/climb1_colin__from_c.jsgf
+./caller: symbol lookup error: ./caller: undefined symbol: ps_init_buffered
+which means it can't find the libpocketsphinx.so
+
+trying this:
+LD_PRELOAD="/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/lib/libpocketsphinx.so \
+/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/lib/libsphinxbase.so \
+/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/lib/libsphinxad.so" \
+CGO_CFLAGS="-g -O2 -Wall \
+-Wno-unused-result \
+-Wno-unused-but-set-variable \
+-Wno-unused-function \
+-Wno-unused-parameter \
+-Wno-unused-variable \
+-I/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/include/ \
+-I/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/include/sphinxbase \
+-I/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/include/pocketsphinx" \
+CGO_LDFLAGS="-L/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/lib -lpocketsphinx -lsphinxbase -lsphinxad" \
+go build
+
+
+
+
+in vs code launch.json from the extension:
+https://github.com/golang/vscode-go/blob/master/docs/debugging.md
+add the "env" field with all the CGO flags:
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch Package",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${fileDirname}",
+            //"envFile" :"$(workspaceFolder)/.env"
+            "env":{
+                "CGO_CFLAGS": "-g -O2 -Wall -Wno-unused-result -Wno-unused-but-set-variable -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable \
+                                -I/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/include/ \
+                                -I/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/include/sphinxbase \
+                                -I/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/include/pocketsphinx",
+                "CGO_LDFLAGS": "-L/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/lib -lpocketsphinx -lsphinxbase -lsphinxad"
+            }
+        }
+    ]
+}
+
+Now the problem is the same when building: mapping SWig can make if you change their wrapping code manually:
+
+Starting: /home/dbarbera/go/bin/dlv-dap dap --check-go-version=false --listen=127.0.0.1:41097 --log-dest=3 from /home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/caller
+time="2021-10-24T05:27:04+01:00" level=warning msg="CGO_CFLAGS already set, Cgo code could be optimized." layer=dlv
+DAP server listening at: 127.0.0.1:41097
+Build Error: go build -o /tmp/__debug_bin3010244988 -gcflags all=-N -l .
+# caller2
+./main.go:82:13: not enough arguments in call to xyz.Ps_call
+	have ([]byte, []byte, []string)
+	want (uintptr, int, uintptr, int, []string) (exit status 2)
+
+
+After fixing the wrapper:
+
+Starting: /home/dbarbera/go/bin/dlv-dap dap --check-go-version=false --listen=127.0.0.1:36217 --log-dest=3 from /home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/caller
+time="2021-10-24T06:36:02+01:00" level=warning msg="CGO_CFLAGS already set, Cgo code could be optimized." layer=dlv
+DAP server listening at: 127.0.0.1:36217
+fjsgf []uint8, 1533
+fwav []uint8, 62926
+Params: []string, 77
+./../data/kl_ay_m__from_c.jsgf
+./../data/climb1_colin__from_c.jsgf
+/tmp/__debug_bin3384676379: symbol lookup error: /tmp/__debug_bin3384676379: undefined symbol: ps_init_buffered
+Process 29936 has exited with status 127
+Detaching
+Process 29936 has exited with status 127
+Detaching
+dlv dap (29637) exited with code: 0
+
+Trying to recompile the xyz module:
+
+CGO_CFLAGS="-g -O2 -Wall -Wl,-rpath=$(pwd)/local/lib -fPIC -Wextra \
+-Wno-unused-result \
+-Wno-unused-but-set-variable \
+-Wno-unused-function \
+-Wno-unused-parameter \
+-Wno-unused-variable \
+-I$(pwd)/usr/local/include/ \
+-I$(pwd)/usr/local/include/sphinxbase \
+-I$(pwd)/usr/local/include/pocketsphinx" \
+CGO_LDFLAGS="-L$(pwd)/usr/local/lib -lpocketsphinx -lsphinxbase -lsphinxad" \
+go install -ldflags="-extldflags=-static"
+
+CGO_CFLAGS="-g -O2 -Wall -Wl,-rpath=$(pwd)/local/lib -fPIC -Wextra \
+-Wno-unused-result \
+-Wno-unused-but-set-variable \
+-Wno-unused-function \
+-Wno-unused-parameter \
+-Wno-unused-variable \
+-I$(pwd)/usr/local/include/ \
+-I$(pwd)/usr/local/include/sphinxbase \
+-I$(pwd)/usr/local/include/pocketsphinx" \
+CGO_LDFLAGS="-L$(pwd)/usr/local/lib -lpocketsphinx -lsphinxbase -lsphinxad" \
+go install -ldflags="-extldflags=-static -L$(pwd)/usr/local/lib"
+
+
+
+
+Solution for the caller was this in the launch.json:
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch Package",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${fileDirname}",
+            // "args":[
+            //     "-ldflags=\"-extldflags=-static\""
+            // ],
+            //"envFile" :"$(workspaceFolder)/.env"
+            "env":{
+                "LD_PRELOAD":"/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/lib/libpocketsphinx.so \
+                            /home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/lib/libsphinxbase.so \
+                            /home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/lib/libsphinxad.so",
+                //"CGO_ENABLED":"1",
+                //"GOPATH": "/home/dbarbera/go",
+                //"GOPATH": "/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/caller",
+                "CGO_CFLAGS": "-g -O2 -Wall -Wl,-rpath=home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/lib -fPIC -Wextra \
+                                -Wno-unused-result -Wno-unused-but-set-variable -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable \
+                                -I/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/include/ \
+                                -I/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/include/sphinxbase \
+                                -I/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/include/pocketsphinx",
+                "CGO_LDFLAGS": "-L/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/lib -lpocketsphinx -lsphinxbase -lsphinxad"
+
+            }
+        }
+    ]
+}
+
+
+Should we have done this for the package xyz?:
+LD_PRELOAD="$(pwd)/usr/local/lib/libpocketsphinx.so $(pwd)/usr/local/lib/libsphinxbase.so $(pwd)/usr/local/lib/libsphinxad.so" \
+CGO_CFLAGS="-g -O2 -Wall -Wl,-rpath=$(pwd)/usr/local/lib -fPIC -Wextra \
+-Wno-unused-result \
+-Wno-unused-but-set-variable \
+-Wno-unused-function \
+-Wno-unused-parameter \
+-Wno-unused-variable \
+-I$(pwd)/usr/local/include/ \
+-I$(pwd)/usr/local/include/sphinxbase \
+-I$(pwd)/usr/local/include/pocketsphinx" \
+CGO_LDFLAGS="-L$(pwd)/usr/local/lib -lpocketsphinx -lsphinxbase -lsphinxad" \
+go build
+
+LD_PRELOAD="$(pwd)/usr/local/lib/libpocketsphinx.so $(pwd)/usr/local/lib/libsphinxbase.so $(pwd)/usr/local/lib/libsphinxad.so" \
+CGO_CFLAGS="-g -O2 -Wall -Wl,-rpath=$(pwd)/usr/local/lib -fPIC -Wextra \
+-Wno-unused-result \
+-Wno-unused-but-set-variable \
+-Wno-unused-function \
+-Wno-unused-parameter \
+-Wno-unused-variable \
+-I$(pwd)/usr/local/include/ \
+-I$(pwd)/usr/local/include/sphinxbase \
+-I$(pwd)/usr/local/include/pocketsphinx" \
+CGO_LDFLAGS="-L$(pwd)/usr/local/lib -lpocketsphinx -lsphinxbase -lsphinxad" \
+go install
+
+
+execution time from module called caller that has a main;
+LD_PRELOAD="$(pwd)/usr/local/lib/libpocketsphinx.so $(pwd)/usr/local/lib/libsphinxbase.so $(pwd)/usr/local/lib/libsphinxad.so" \
+./caller
+
+Obviouslly, this cannot work if we install, can it?
+LD_PRELOAD="$(pwd)/usr/local/lib/libpocketsphinx.so $(pwd)/usr/local/lib/libsphinxbase.so $(pwd)/usr/local/lib/libsphinxad.so" \
+caller
+
+it would work with absolute paths I think:
+LD_PRELOAD="/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/lib/libpocketsphinx.so \
+/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/lib/libsphinxbase.so \
+/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/lib/libsphinxad.so" \
+CGO_CFLAGS="-g -O2 -Wall -Wl,-rpath=home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/lib -fPIC -Wextra \
+-Wno-unused-result \
+-Wno-unused-but-set-variable \
+-Wno-unused-function \
+-Wno-unused-parameter \
+-Wno-unused-variable \
+-I/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/include/ \
+-I/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/include/sphinxbase \
+-I/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/include/pocketsphinx" \
+CGO_LDFLAGS="-L/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/lib -lpocketsphinx -lsphinxbase -lsphinxad" \
+go install
+
+LD_PRELOAD="/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/lib/libpocketsphinx.so \
+/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/lib/libsphinxbase.so \
+/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/xyz/usr/local/lib/libsphinxad.so" \
+caller
+well, it doesnt work. I suppose we need our libraries in the system
+
+Trying something more sophisticated:
+go build -gccgoflags="-I$(pwd)/usr/local/include/ \
+-I$(pwd)/usr/local/include/sphinxbase \
+-I$(pwd)/usr/local/include/pocketsphinx \
+-L$(pwd)/usr/local/lib -lpocketsphinx -lsphinxbase -lsphinxad"
+Doesnt worked
+
+This is the way (lets hope)
+https://stackoverflow.com/questions/24709659/linking-3rd-party-static-libs-in-cgo-library
+CGO_CFLAGS="-g -O2 -Wall -Wl,-rpath=$(pwd)/usr/local/lib -fPIC -Wextra \
+-Wno-unused-result \
+-Wno-unused-but-set-variable \
+-Wno-unused-function \
+-Wno-unused-parameter \
+-Wno-unused-variable \
+-I$(pwd)/usr/local/include/ \
+-I$(pwd)/usr/local/include/sphinxbase \
+-I$(pwd)/usr/local/include/pocketsphinx" \
+CGO_LDFLAGS="-L$(pwd)/usr/local/lib -lpocketsphinx -lsphinxbase -lsphinxad" \
+go build -v -x --ldflags '-extldflags "-static"'  github.com/davidbarbera/articulate-pocketsphinx-go/xyz
+
+-----------------------------------------------------------------------------------------------------------------------------
+
+LD_PRELOAD="/usr/local/lib/libxyzpocketsphinx.so /usr/local/lib/libxyzsphinxbase.so /usr/local/lib/libxyzsphinxad.so" \
+CGO_CFLAGS="-g -O2 -Wall -Wl,-rpath=/usr/local/lib -fPIC -Wextra \
+-Wno-unused-result \
+-Wno-unused-but-set-variable \
+-Wno-unused-function \
+-Wno-unused-parameter \
+-Wno-unused-variable \
+-I/usr/local/include/ \
+-I/usr/local/include/xyzsphinxbase \
+-I/usr/local/include/xyzpocketsphinx \
+-I/usr/include" \
+CGO_LDFLAGS="-lpthread -lm -L/usr/local/lib -lxyzpocketsphinx -lxyzsphinxbase -lxyzsphinxad" \
+go build
+---------------------------------------------------------------------------------------------------------------------------------
+This works from caller:
+From a build:
+CGO_CFLAGS="-g -O2 -Wall -Wl,-rpath=/usr/local/lib -fPIC -Wextra \
+-Wno-unused-result \
+-Wno-unused-but-set-variable \
+-Wno-unused-function \
+-Wno-unused-parameter \
+-Wno-unused-variable \
+-I/usr/local/include/ \
+-I/usr/local/include/xyzsphinxbase \
+-I/usr/local/include/xyzpocketsphinx \
+-I/usr/include" \
+CGO_LDFLAGS="-lpthread -lm -L/usr/local/lib -lxyzpocketsphinx -lxyzsphinxbase -lxyzsphinxad" \
+go build
+
+
+LD_PRELOAD="/usr/local/lib/libxyzpocketsphinx.so /usr/local/lib/libxyzsphinxbase.so /usr/local/lib/libxyzsphinxad.so" \
+./caller
+
+-------
+CGO_CFLAGS="-g -O2 -Wall -Wl,-rpath=/usr/local/lib -fPIC -Wextra \
+-Wno-unused-result \
+-Wno-unused-but-set-variable \
+-Wno-unused-function \
+-Wno-unused-parameter \
+-Wno-unused-variable \
+-I/usr/local/include/ \
+-I/usr/local/include/xyzsphinxbase \
+-I/usr/local/include/xyzpocketsphinx \
+-I/usr/include" \
+CGO_LDFLAGS="-lpthread -lm -L/usr/local/lib -lxyzpocketsphinx -lxyzsphinxbase -lxyzsphinxad" \
+go install
+
+
+LD_PRELOAD="/usr/local/lib/libxyzpocketsphinx.so /usr/local/lib/libxyzsphinxbase.so /usr/local/lib/libxyzsphinxad.so" \
+caller

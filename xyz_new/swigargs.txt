@@ -1,0 +1,11 @@
+-g -Wall -Og -ggdb  \
+-Wno-unused-result \
+-Wl,-rpath=~/Repositories/mySphinx/debug/usr/local/lib \
+-I~/Repositories/mySphinx/sphinxbase/include \
+-I~/Repositories/mySphinx/sphinxbase/include/sphinxbase \
+-I~/Repositories/mySphinx/pocketsphinx/include \
+-I/usr/include \
+-lpthread -lm \
+-L~/Repositories/mySphinx/debug/usr/local/lib \
+-lpocketsphinx -lsphinxbase -lsphinxad" \
+-go -cgo -intgosize 64 xyz.i

@@ -1,5 +1,5 @@
-/* File : example.i */
-%module example
+/* File : multimap.i */
+%module multimap
 
 %{
 extern int gcd(int x, int y);

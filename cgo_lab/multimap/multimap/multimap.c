@@ -1,4 +1,4 @@
-/* File : example.c */
+/* File : multimap.c */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
