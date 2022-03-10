@@ -74,13 +74,14 @@ func concurrently_int(n int) {
 
 func concurrently(frates [5]string, parameters [5][]string, jsgfs [5]string, wavs [5]string) {
 
+	var results [][]xyz_plus.Utt
 	ch := make(chan []xyz_plus.Utt)
 	var wg sync.WaitGroup
 
 	//n := len(wavs)
 	//wg.Add(n)
 	start := time.Now()
-	for i := 4; i < 5; i++ {
+	for i := 2; i < 5; i++ {
 		jsgf_buffer, err := os.ReadFile(jsgfs[i])
 		check(err)
 		audio_buffer, err := os.ReadFile(wavs[i])
@@ -90,23 +91,23 @@ func concurrently(frates [5]string, parameters [5][]string, jsgfs [5]string, wav
 		go call_to_ps_wg_chan(jsgf_buffer, audio_buffer, parameters[i], &wg, ch)
 	}
 
-	// go func() {
-	// 	wg.Wait()
-	// 	close(ch)
-	// }()
+	go func() {
+		wg.Wait()
+		close(ch)
+	}()
 
-	var results [][]xyz_plus.Utt
 	// go func() {
 	// 	for v := range ch {
 	// 		results = append(results, v)
 	// 	}
 	// }()
 
-	wg.Wait()
-	close(ch)
+	// wg.Wait()
+	// close(ch)
 	for v := range ch {
 		results = append(results, v)
 	}
+
 	elapsed := time.Since(start)
 
 	// for i := range messages {
@@ -114,9 +115,9 @@ func concurrently(frates [5]string, parameters [5][]string, jsgfs [5]string, wav
 	// }
 
 	fmt.Println("Concurrently (multithreaded-encapsulated): ")
-	for result := range results {
-		fmt.Println(result)
-	}
+	// for result := range results {
+	// 	fmt.Println(result)
+	// }
 	fmt.Println(results)
 	fmt.Printf(">>>> Timing: %s\n", elapsed)
 	fmt.Println()
@@ -126,6 +127,17 @@ func concurrently(frates [5]string, parameters [5][]string, jsgfs [5]string, wav
 	// }
 
 	// fmt.Println(result)
+}
+
+func sequentially(frates [5]string, parameters [5][]string, jsgfs [5]string, wavs [5]string) {
+	n := len(wavs)
+	starti := time.Now()
+	for i := 0; i < n; i++ {
+		test_ps(frates[i], jsgfs[i], wavs[i], parameters[i])
+	}
+	elapsedi := time.Since(starti)
+	fmt.Printf(">>>> Timing: %s\n", elapsedi)
+	fmt.Println()
 }
 
 func check(e error) {
@@ -237,142 +249,8 @@ func getParamsFromFile(file string) {
 }
 
 func main() {
-	//Data:
-	//Filenames
-	//filename_jsgf := "./../data/kl_ay_m.jsgf"
-	//filename_wav := "./../data/climb1_colin.wav"
 
-	// filename_jsgf1 := "/home/dbarbera/Repositories/sphinx/data/kl_ay_m.jsgf"
-	// filename_wav1 := "/home/dbarbera/Repositories/mySphinx/data/climb1_colin.wav"
-	// //Parameters
-	// params1 := []string{
-	// 	"pocketsphinx_continuous",
-	// 	"-alpha", "0.97",
-	// 	"-backtrace", "yes",
-	// 	"-beam", "1e-10000",
-	// 	"-bestpath", "no",
-	// 	"-cmn", "live",
-	// 	"-cmninit", "52.55,0.14,-3.23,14.29,-7.74,9.03,-7.17,-6.31,-0.13,1.09,5.23,-2.69,1.01",
-	// 	"-dict", "/home/dbarbera/Repositories/mySphinx/data/art_db.phone",
-	// 	"-dither", "no",
-	// 	"-doublebw", "no",
-	// 	"-featparams", "/home/dbarbera/Repositories/mySphinx/data/en-us/en-us/feat.params",
-	// 	//"-featparams", "/usr/local/share/pocketsphinx/model/en-us/en-us/feat.params",
-	// 	"-fsgusefiller", "no",
-	// 	"-frate", "125",
-	// 	"-fwdflat", "no",
-	// 	"-hmm", "/home/dbarbera/Repositories/mySphinx/data/en-us/en-us",
-	// 	//"-hmm", "/usr/local/share/pocketsphinx/model/en-us/en-us",
-	// 	"-infile", "/home/dbarbera/Repositories/mySphinx/data/climb1_colin.wav",
-	// 	"-jsgf", "/home/dbarbera/Repositories/sphinx/data/kl_ay_m.jsgf",
-	// 	"-logfn", "/home/dbarbera/Repositories/mySphinx/data/output.log",
-	// 	"-lpbeam", "1e-10000",
-	// 	"-lponlybeam", "1e-10000",
-	// 	"-lw", "6",
-	// 	"-maxhmmpf", "-1",
-	// 	"-maxwpf", "-1",
-	// 	"-nfft", "256",
-	// 	"-nwpen", "1",
-	// 	"-pbeam", "1e-10000",
-	// 	"-pip", "1",
-	// 	"-pl_window", "0",
-	// 	"-remove_dc", "no",
-	// 	"-remove_noise", "yes",
-	// 	"-remove_silence", "no",
-	// 	"-topn", "4",
-	// 	"-vad_postspeech", "25",
-	// 	"-vad_prespeech", "5",
-	// 	"-vad_startspeech", "8",
-	// 	"-vad_threshold", "1",
-	// 	"-wbeam", "1e-10000",
-	// 	"-wip", "0.5",
-	// 	"-wlen", "0.016"}
-
-	// params2 := []string{
-	// 	"pocketsphinx_continuous",
-	// 	"-alpha", "0.97",
-	// 	"-backtrace", "yes",
-	// 	"-beam", "1e-10000",
-	// 	"-bestpath", "no",
-	// 	"-cmn", "live",
-	// 	"-cmninit", "43.46,-0.55,-4.37,11.73,-6.42,8.67,-8.58,-7.35,-0.16,2.92,6.63,0.05,4.06",
-	// 	"-dict", "/home/dbarbera/Repositories/mySphinx/data/art_db.phone",
-	// 	"-dither", "no",
-	// 	"-doublebw", "no",
-	// 	//"-featparams", "/home/dbarbera/Repositories/mySphinx/data/en-us/en-us/feat.params",
-	// 	"-featparams", "/usr/local/share/xyzpocketsphinx/model/en-us/en-us/feat.params",
-	// 	"-fsgusefiller", "no",
-	// 	"-frate", "125",
-	// 	"-fwdflat", "no",
-	// 	//"-hmm", "/home/dbarbera/Repositories/mySphinx/data/en-us/en-us",
-	// 	"-hmm", "/usr/local/share/xyzpocketsphinx/model/en-us/en-us",
-	// 	"-infile", "/home/dbarbera/Data/climb/climb1_colin_fixed_trimmed.wav",
-	// 	"-jsgf", "/home/dbarbera/Data/climb/forced_align_5a02788e-3d91-446f-828a-428b7f2d8785_climb1_colin_fixed_trimmed.wav.jsgf",
-	// 	"-logfn", "/home/dbarbera/Data/climb/output/output.log",
-	// 	"-lpbeam", "1e-10000",
-	// 	"-lponlybeam", "1e-10000",
-	// 	"-lw", "6",
-	// 	"-maxhmmpf", "-1",
-	// 	"-maxwpf", "-1",
-	// 	"-nfft", "256",
-	// 	"-nwpen", "1",
-	// 	"-pbeam", "1e-10000",
-	// 	"-pip", "1",
-	// 	"-pl_window", "0",
-	// 	"-remove_dc", "no",
-	// 	"-remove_noise", "yes",
-	// 	"-remove_silence", "no",
-	// 	"-topn", "4",
-	// 	"-vad_postspeech", "25",
-	// 	"-vad_prespeech", "5",
-	// 	"-vad_startspeech", "8",
-	// 	"-vad_threshold", "1",
-	// 	"-wbeam", "1e-10000",
-	// 	"-wip", "0.5",
-	// 	"-wlen", "0.016"}
-	// filename_jsgf2 := "/home/dbarbera/Data/climb/forced_align_5a02788e-3d91-446f-828a-428b7f2d8785_climb1_colin_fixed_trimmed.wav.jsgf"
-	// filename_wav2 := "/home/dbarbera/Data/climb/climb1_colin_fixed_trimmed.wav"
-
-	// params3 := []string{
-	// 	"pocketsphinx_continuous",
-	// 	"-nwpen", "1",
-	// 	"-backtrace", "yes",
-	// 	"-maxwpf", "-1",
-	// 	"-lw", "6",
-	// 	"-featparams", "/usr/local/share/xyzpocketsphinx/model/en-us/en-us/feat.params",
-	// 	"-hmm", "/usr/local/share/xyzpocketsphinx/model/en-us/en-us",
-	// 	//"-lm", "/usr/local/share/xyzpocektsphinx/model/en-us/en-us.lm.bin",
-	// 	"-dict", "/home/dbarbera/Data/art_db.phone",
-	// 	"-fwdflat", "no",
-	// 	"-wlen", "0.016",
-	// 	"-frate", "125",
-	// 	"-wbeam", "1e-10000",
-	// 	"-remove_silence", "no",
-	// 	"-vad_postspeech", "25",
-	// 	"-doublebw", "no",
-	// 	"-vad_threshold", "1",
-	// 	"-fsgusefiller", "no",
-	// 	//"-jsgf", "/home/dbarbera/Repositories/test_pronounce/audio_clips/Temp_7302731c-188f-4dfe-83ce-a5a004f1cab2/forced_align_450654b3-3a8f-4709-821f-9341848ccd86_climb1_colin_fixed_trimmed.wav.jsgf", "-pl_window", "0", "-beam", "1e-10000", "-lponlybeam", "1e-10000", "-pbeam", "1e-10000", "-vad_startspeech", "8", "-alpha", "0.97", "-pip", "1", "-bestpath", "no", "-lpbeam", "1e-10000", "-maxhmmpf", "-1",
-	// 	"-jsgf", "/home/dbarbera/Data/climb/forced_align_000_climb1_colin_fixed_trimmed.wav.jsgf",
-	// 	"-pl_window", "0", "-beam", "1e-10000", "-lponlybeam", "1e-10000", "-pbeam", "1e-10000", "-vad_startspeech", "8", "-alpha", "0.97", "-pip", "1", "-bestpath", "no", "-lpbeam", "1e-10000", "-maxhmmpf", "-1",
-	// 	//"-infile", "/home/dbarbera/Repositories/test_pronounce/audio_clips/climb1_colin_fixed_trimmed.wav",
-	// 	"-infile", "/home/dbarbera/Data/climb/climb1_colin_fixed_trimmed.wav",
-	// 	"-cmninit", "43.46,-0.55,-4.37,11.73,-6.42,8.67,-8.58,-7.35,-0.16,2.92,6.63,0.05,4.06",
-	// 	"-vad_prespeech", "5",
-	// 	"-dither", "no",
-	// 	"-topn", "4",
-	// 	"-remove_noise", "yes",
-	// 	"-remove_dc", "no",
-	// 	//"-nfft", "256", //this works
-	// 	"-nfft", "512", //this works too
-	// 	"-logfn", "/home/dbarbera/Data/climb/output/forced_align_000_climb1_colin_fixed_trimmed.log",
-	// 	"-cmn", "-live",
-	// 	"-wip", "0.5",
-	// } //Just
-	// filename_jsgf3 := "/home/dbarbera/Data/climb/forced_align_000_climb1_colin_fixed_trimmed.wav.jsgf"
-	// filename_wav3 := "/home/dbarbera/Data/climb/climb1_colin_fixed_trimmed.wav"
-
-	params72 := []string{
+	var params72 = []string{
 		"pocketsphinx_continuous",
 		"-alpha", "0.97",
 		"-backtrace", "yes",
@@ -413,7 +291,7 @@ func main() {
 		"-wlen", "0.032",
 	}
 
-	params125 := []string{
+	var params125 = []string{
 		"pocketsphinx_continuous",
 		"-alpha", "0.97",
 		"-backtrace", "yes",
@@ -454,7 +332,7 @@ func main() {
 		"-wlen", "0.016",
 	}
 
-	params105 := []string{
+	var params105 = []string{
 		"pocketsphinx_continuous",
 		"-alpha", "0.97",
 		"-backtrace", "yes",
@@ -495,7 +373,7 @@ func main() {
 		"-wlen", "0.020",
 	}
 
-	params80 := []string{
+	var params80 = []string{
 		"pocketsphinx_continuous",
 		"-alpha", "0.97",
 		"-backtrace", "yes",
@@ -536,7 +414,7 @@ func main() {
 		"-wlen", "0.028",
 	}
 
-	params91 := []string{
+	var params91 = []string{
 		"pocketsphinx_continuous",
 		"-alpha", "0.97",
 		"-backtrace", "yes",
@@ -577,97 +455,6 @@ func main() {
 		"-wlen", "0.024",
 	}
 
-	// paramsMinimal := []string{
-	// 	"pocketsphinx_continuous",
-	// 	// "-alpha", "0.97",
-	// 	// "-backtrace", "yes",
-	// 	// "-beam", "1e-10000",
-	// 	// "-bestpath", "no",
-	// 	// "-cmn", "live",
-	// 	// "-cmninit", "53.92,4.73,-7.01,5.40,-1.92,8.97,-4.24,-17.95,-17.00,-6.15,2.58,1.61,-1.69",
-	// 	"-dict", "/home/dbarbera/Data/art_db.phone",
-	// 	// "-dither", "no",
-	// 	// "-doublebw", "no",
-	// 	"-featparams", "/usr/local/share/xyzpocketsphinx/model/en-us/en-us/feat.params",
-	// 	// "-frate", "105",
-	// 	// "-fsgusefiller", "no",
-	// 	// "-fwdflat", "no",
-	// 	"-infile", "/home/dbarbera/Repositories/test_pronounce/audio_clips/allowed1_philip_fixed_trimmed.wav",
-	// 	"-jsgf", "/home/dbarbera/Repositories/test_pronounce/audio_clips/Temp_f1d289d6-c152-4e26-a2f4-483175d7a12c/forced_align_a434c972-810b-40fc-b9a5-9e6697dcf5c5_allowed1_philip_fixed_trimmed.wav.jsgf",
-	// 	"-logfn", "/home/dbarbera/Repositories/test_pronounce/audio_clips/Temp_f1d289d6-c152-4e26-a2f4-483175d7a12c/08d56917-1343-485a-b159-98c512623710_frate_105.log",
-	// 	// "-lpbeam", "1e-10000",
-	// 	// "-lponlybeam", "1e-10000",
-	// 	// "-lw", "6",
-	// 	// "-maxhmmpf", "-1",
-	// 	// "-maxwpf", "-1",
-	// 	// "-nfft", "512",
-	// 	// "-nwpen", "1",
-	// 	// "-pbeam", "1e-10000",
-	// 	// "-pip", "1",
-	// 	// "-pl_window", "0",
-	// 	// "-remove_dc", "no",
-	// 	// "-remove_noise", "yes",
-	// 	// "-remove_silence", "no",
-	// 	// "-topn", "4",
-	// 	// "-vad_postspeech", "20",
-	// 	// "-vad_prespeech", "5",
-	// 	// "-vad_startspeech", "5",
-	// 	// "-vad_threshold", "1.5",
-	// 	// "-wbeam", "1e-10000",
-	// 	// "-wip", "0.5",
-	// 	// "-wlen", "0.020",
-	// }
-
-	// filename_jsgfMinimal := "/home/dbarbera/Repositories/test_pronounce/audio_clips/Temp_f1d289d6-c152-4e26-a2f4-483175d7a12c/forced_align_a434c972-810b-40fc-b9a5-9e6697dcf5c5_allowed1_philip_fixed_trimmed.wav.jsgf"
-	// filename_wavMinimal := "/home/dbarbera/Repositories/test_pronounce/audio_clips/allowed1_philip_fixed_trimmed.wav"
-
-	//[]string len: 77, cap: 96, ["pocketsphinx_continuous","-beam","1e-10000","-alpha","0.97","-nfft","512","-remove_silence","yes","-vad_startspeech","5","-lw","6","-maxwpf","-1","-doublebw","yes","-dither","yes","-backtrace","yes","-pl_window","0","-wip","0.25","-featparams","/usr/local/share/xyzpocketsphinx/model/en-us/en-us/feat.params","-jsgf","/home/dbarbera/Repositories/test_pronounce/audio_clips/Temp_ede78846-4ed3-444b-b1bb-ccfc4ddb9465/forced_align_3dec0235-cb32-4b6f-a4bb-24c9f123aa56_allowed1_philip_fixed_trimmed.wav.jsgf","-frate","72","-bestpath","no","-lponlybeam","1e-10000","-vad_prespeech","5","-nwpen","1","-cmn","live","-logfn","/home/dbarbera/Repositories/test_pronounce/audio_clips/Temp_ede78846-4ed3-444b-b1bb-ccfc4ddb9465/cb2ea7d3-f961-409f-aa4a-b7708a9dae36.log","-wbeam","1e-10000","-infile","/home/dbarbera/Repositories/test_pronounce/audio_clips/allowed1_philip_fixed_trimmed.wav","-pip","1.15","-fwdflat","no","-lpbeam","1e-10000","-cmninit","","-vad_threshold","1.5","-topn","6","-vad_postspeech","20","-fsgusefiller","no","-wlen",...+13 more]
-
-	//result := []string{"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"}
-
-	// params := params1
-	// params = params2
-	// params = params3
-	// // params = params72
-	// params = params125
-	// params = params105
-	// params = params80
-
-	// filename_jsgf := filename_jsgf1
-	// filename_wav := filename_wav1
-	// filename_jsgf = filename_jsgf2
-	// filename_wav = filename_wav2
-	// filename_jsgf = filename_jsgf3
-	// filename_wav = filename_wav3
-	// filename_jsgf = filename_jsgf72
-	// filename_wav = filename_wav72
-	// filename_jsgf = filename_jsgf125
-	// filename_wav = filename_wav125
-	// filename_jsgf = filename_jsgf105
-	// filename_wav = filename_wav105
-	// filename_jsgf = filename_jsgf80
-	// filename_wav = filename_wav80
-
-	// // init params:
-	// params = params
-	// filename_jsgf = filename_jsgf
-	// filename_wav = filename_wav
-
-	// jsgf_buffer, err := os.ReadFile(filename_jsgf)
-	// check(err)
-	// audio_buffer, err := os.ReadFile(filename_wav)
-	// check(err)
-
-	// //Checks:
-	// fmt.Printf("fjsgf %T, %d\n", jsgf_buffer, len(jsgf_buffer))
-	// fmt.Printf("fwav %T, %d\n", audio_buffer, len(audio_buffer))
-	// fmt.Printf("Params: %T, %d\n", params, len(params))
-
-	//fmt.Printf("%s\n", filename_jsgf[:len(filename_jsgf)-5]+"__from_c.jsgf")
-	//fmt.Printf("%s\n", filename_wav[:len(filename_wav)-4]+"__from_c.jsgf")
-
-	//r := []xyz.Utt{}
-
 	//Sorry, quick and dirty:
 
 	var frates [5]string
@@ -698,15 +485,8 @@ func main() {
 	wavs[3] = getValue("-infile", params80)
 	wavs[4] = getValue("-infile", params91)
 
-	// //This works, because it is serialised
-	// n := len(wavs)
-	// starti := time.Now()
-	// for i := 0; i < n; i++ {
-	// 	test_ps(frates[i], jsgfs[i], wavs[i], parameters[i])
-	// }
-	// elapsedi := time.Since(starti)
-	// fmt.Printf(">>>> Timing: %s\n", elapsedi)
-	// fmt.Println()
+	//This works, because it is serialised
+	//sequentially(frates, parameters, jsgfs, wavs)
 
 	concurrently(frates, parameters, jsgfs, wavs)
 	//concurrently_int(5)
