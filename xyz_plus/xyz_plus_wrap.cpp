@@ -225,12 +225,7 @@ static void* Swig_malloc(int c) {
 }
 
 
-// extern int create_file_params_nofilename(int argc, char *argv[]);
-// extern int check_string(char *str);
-// extern int passing_bytes(char *bytes, int len);
 extern int ps_plus_call(void* jsgf_buffer, int jsgf_buffer_size, void* audio_buffer, int audio_buffer_size, int argc, char *argv[], char *result, int rsize);
-// extern int modify_go_string(char *str, int len);
-// extern void mock_ps_call(void);
 
 #ifdef __cplusplus
 extern "C" {
@@ -245,7 +240,6 @@ void _wrap_Swig_free_xyz_2460481bc7b6ab28(void *_swig_go_0) {
   
 }
 
-
 void *_wrap_Swig_malloc_xyz_2460481bc7b6ab28(intgo _swig_go_0) {
   int arg1 ;
   void *result = 0 ;
@@ -257,85 +251,6 @@ void *_wrap_Swig_malloc_xyz_2460481bc7b6ab28(intgo _swig_go_0) {
   *(void **)&_swig_go_result = (void *)result; 
   return _swig_go_result;
 }
-
-
-// intgo _wrap_passing_bytes_xyz_2460481bc7b6ab28(_goslice_ _swig_go_0) {
-//   char *arg1 = (char *) 0 ;
-//   int arg2 ;
-//   int result;
-//   intgo _swig_go_result;
-  
-  
-//   arg1 = _swig_go_0.array;
-//   arg2 = _swig_go_0.len;
-  
-  
-//   result = (int)passing_bytes(arg1,arg2);
-//   _swig_go_result = result; 
-//   return _swig_go_result;
-// }
-
-
-// intgo _wrap_create_file_params_nofilename_xyz_2460481bc7b6ab28(_goslice_ _swig_go_0) {
-//   int arg1 ;
-//   char **arg2 ;
-//   int result;
-//   intgo _swig_go_result;
-  
-  
-//   int i;
-//   _gostring_* a;
-  
-//   arg1 = _swig_go_0.len;
-//   a = (_gostring_*) _swig_go_0.array;
-//   arg2 = (char **) malloc ((arg1 ) * sizeof (char *));
-//   for ( i = 0; i < arg1; i++) {
-//     _gostring_ *ps = &a[i];
-//     arg2[i] = (char*)malloc( ((int)(ps->n) + 1)*sizeof(char));
-//     memcpy(arg2[i],(char*) ps->p, (int)(ps->n) );
-//     //arg2[i] = (char *) ps->p;
-//     arg2[i][ps->n]='\0';
-//     // _gostring_ *ps = &a[i];
-//     // arg2[i] = (char *) ps->p;
-//   }
-//   //arg2[i] = NULL;
-//   //arg2[i] = '\0';
-  
-  
-  
-//   result = (int)create_file_params_nofilename(arg1,arg2);
-//   _swig_go_result = result; 
-  
-  
-//   for (i = 0; i < arg1; i++) {
-//     free(arg2[i]);
-//   }
-//   free(arg2);
-  
-//   return _swig_go_result;
-// }
-
-
-// intgo _wrap_check_string_xyz_2460481bc7b6ab28(_gostring_ _swig_go_0) {
-//   char *arg1 = (char *) 0 ;
-//   int result;
-//   intgo _swig_go_result;
-  
-//   {
-//     _gostring_ *ps = (_gostring_*) &_swig_go_0;
-//     arg1 = (char*)malloc( ((int)(ps->n) + 1)*sizeof(char));
-//     memcpy(arg1, (char*)(ps->p), (int)(ps->n));
-//     arg1[ps->n]='\0';
-//   }
-  
-//   result = (int)check_string(arg1);
-//   _swig_go_result = result; 
-//   {
-//     free(arg1);
-//   }
-//   return _swig_go_result;
-// }
-
 
 intgo _wrap_ps_plus_call_xyz_2460481bc7b6ab28(_goslice_ _swig_go_0, _goslice_ _swig_go_1, _goslice_ _swig_go_2, _goslice_ _swig_go_3) {
   void *arg1 = (void *) 0 ;
@@ -404,136 +319,6 @@ intgo _wrap_ps_plus_call_xyz_2460481bc7b6ab28(_goslice_ _swig_go_0, _goslice_ _s
   return _swig_go_result;
 }
 
-
-// //From multimap_examples:
-// intgo _wrap_modify_go_string_2460481bc7b6ab28(_goslice_ _swig_go_0) {
-//   char *arg1 = (char *) 0 ;
-//   int arg2 ;
-//   int result;
-//   intgo _swig_go_result;
-  
-  
-//   {
-//     _gostring_ *a;
-//     char *p;
-//     int n;
-    
-//     a = (_gostring_*) _swig_go_0.array;
-//     p = a[0].p;
-//     n = a[0].n;
-//     arg1 = malloc(n + 1);
-//     arg2 = n;
-//     memcpy(arg1, p, n);
-//   }
-  
-  
-//   result = modify_go_string(arg1,arg2);
-//   _swig_go_result = result; 
-  
-//   {
-//     _gostring_ *a;
-    
-//     a = (_gostring_*) _swig_go_0.array;
-//     a[0] = Swig_AllocateString(arg1, arg2);
-//   }
-  
-  
-//   free(arg1);
-
-//   return _swig_go_result; 
-// }
-
-// void _wrap_mock_ps_call_2460481bc7b6ab28(void){
-
-//   mock_ps_call();
-
-// }
-
-
-// //Testing how to return values in C to Go:
-// This doesnt work unfortunately
-// intgo _wrap_modify_go_strings_2460481bc7b6ab28(_goslicestring_ go_data) {
- 
-//   int len ;
-//   int result;
-//   intgo _swig_go_result;
-//   _goslicestring_ c_data;
-
-//   c_data.array = (_gostring_*)malloc(go_data.len * sizeof(_gostring_));
-//   c_data.len = go_data.len;
-//   c_data.cap = go_data.cap;
-//   len = go_data.len;
-//   for( int i = 0; i < len; i++)
-//   {
-  
-//     char *p;
-//     int n;
-//     n = go_data.array[i].n;
-//     c_data.array[i].n = n;
-//     c_data.array[i].p = (char*)malloc((n + 1)*sizeof(char));
-//     memcpy(c_data.array[i].p, go_data.array[i].p, sizeof(char)*(n+1));
-
-//   }
-  
-  
-//   result = (int)modify_go_strings(c_data);
-//   _swig_go_result = result;
-  
-//   //
-//   for( int i = 0; i < len; i++)
-//   {
-//     char *p;
-//     int n;
-//     n = c_data.array[i].n;
-//     go_data.array[i].n = n;
-//     go_data.array[i].p = (char*)malloc((n)*sizeof(char));
-//     memcpy(go_data.array[i].p, c_data.array[i].p, sizeof(char)*(n));
-//   }
-  
-//   for(int i = 0; i < len; i++){
-//     free(c_data.array[i].p);
-//   }
-
-//   free(c_data.array);
-
-//   return _swig_go_result;
-// }
-
-// //some code:
-// static _gostring_ Swig_AllocateString(const char *p, size_t l) {
-//   _gostring_ ret;
-//   ret.p = (char*)malloc(l);
-//   memcpy(ret.p, p, l);
-//   ret.n = l;
-//   return ret;
-// }
-
-
-// //------
-//  int i;
-//   _gostring_* a;
-  
-//   arg1 = _swig_go_0.len;
-//   a = (_gostring_*) _swig_go_0.array;
-//   arg2 = (char **) malloc ((arg1 ) * sizeof (char *));
-//   for ( i = 0; i < arg1; i++) {
-//     _gostring_ *ps = &a[i];
-//     arg2[i] = (char*)malloc( ((int)(ps->n) + 1)*sizeof(char));
-//     memcpy(arg2[i],(char*) ps->p, (int)(ps->n) );
-//     //arg2[i] = (char *) ps->p;
-//     arg2[i][ps->n]='\0';
-//     // _gostring_ *ps = &a[i];
-//     // arg2[i] = (char *) ps->p;
-//   }
-//   //arg2[i] = NULL;
-//   //arg2[i] = '\0';
-
-// typedef long long intgo;
-// typedef unsigned long long uintgo; 
-
-// typedef struct { char *p; intgo n; } _gostring_;
-// typedef struct { void* array; intgo len; intgo cap; } _goslice_;
-// typedef struct { _gostring_ *array; intgo len; intgo cap; } _goslicestring_;
 
 #ifdef __cplusplus
 }

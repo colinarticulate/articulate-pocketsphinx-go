@@ -6,19 +6,6 @@
 
 //using namespace std::chrono;
 
-// #ifdef ASIO_STANDALONE
-//   #include <asio.hpp>
-//   #define ASIO asio
-//   #define ASIO_ERROR_CODE asio::error_code
-//   #define ASIO_TIMER asio::steady_timer
-// #else
-//   #include <boost/asio.hpp>
-//   #define ASIO boost::asio
-//   #define ASIO_ERROR_CODE boost::system::error_code
-//   #define ASIO_TIMER boost::asio::deadline_timer
-// #endif
-
-
 
 // void sequential_encapsulated(PS_Data data[5]) {
 //     XYZ_PocketSphinx ps[5];
@@ -150,10 +137,11 @@ int ps_plus_call(void* jsgf_buffer, int jsgf_buffer_size, void* audio_buffer, in
 
     //Encapsulated version:
     XYZ_PocketSphinx ps;
-    ps.init(jsgf_buffer, jsgf_buffer_size, audio_buffer, audio_buffer_size, argc, argv);
+    ps.init_data(jsgf_buffer, jsgf_buffer_size, audio_buffer, audio_buffer_size, argc, argv);
     ps.init_recognition();
     ps.recognize_from_buffered_file();
-    ps.terminate();
+    ps.terminate_recognition();
+    ps.terminate_data();
 
 
     if (ps._result_size < rsize && strlen(ps._result)>0){

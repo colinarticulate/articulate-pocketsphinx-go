@@ -94,7 +94,7 @@ class XYZ_PocketSphinx {
         int _result_size;
 
         //void XYZ_PocketPsphinx(void* jsgf_buffer, size_t jsgf_buffer_size, void* audio_buffer, size_t audio_buffer_size, int argc, char **argv) {
-        void init(void* jsgf_buffer, size_t jsgf_buffer_size, void* audio_buffer, size_t audio_buffer_size, int argc, char **argv) {
+        void init_data(void* jsgf_buffer, size_t jsgf_buffer_size, void* audio_buffer, size_t audio_buffer_size, int argc, char **argv) {
             _jsgf_buffer = jsgf_buffer;
             _jsgf_buffer_size = jsgf_buffer_size;
             _audio_buffer = audio_buffer;
@@ -150,16 +150,15 @@ class XYZ_PocketSphinx {
             return 0;
         }
 
-
-        void terminate(){
+        void terminate_recognition(){
             ps_free(_ps);
             cmd_ln_free_r(_config);
-            
-            
+        }
+
+        void terminate_data(){
             for(int i =0; i< _argc; i++){
                 free(_argv[i]);
             }
-
             free(_argv);
         }
 

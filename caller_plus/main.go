@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"os"
 	"sort"
-	"strconv"
-	"strings"
 	"sync"
 	"time"
 
@@ -17,16 +15,17 @@ import (
 	"github.com/davidbarbera/articulate-pocketsphinx-go/xyz_plus"
 )
 
-func call_to_ps(jsgf_buffer []byte, audio_buffer []byte, params []string, c chan []xyz_plus.Utt) {
+// func call_to_ps(jsgf_buffer []byte, audio_buffer []byte, params []string, c chan []xyz_plus.Utt) {
 
-	c <- Ps(jsgf_buffer, audio_buffer, params)
+// 	c <- Ps(jsgf_buffer, audio_buffer, params)
 
-}
+// }
 
 func call_to_ps_wg_chan(jsgf_buffer []byte, audio_buffer []byte, params []string, wg *sync.WaitGroup, resultChan chan<- []xyz_plus.Utt) {
 	defer wg.Done()
 
-	resultChan <- Ps(jsgf_buffer, audio_buffer, params)
+	//resultChan <- Ps(jsgf_buffer, audio_buffer, params)
+	resultChan <- xyz_plus.Ps_plus_call(jsgf_buffer, audio_buffer, params)
 
 }
 
@@ -72,64 +71,59 @@ func concurrently_int(n int) {
 	fmt.Println(result)
 }
 
-func concurrently(frates [5]string, parameters [5][]string, jsgfs [5]string, wavs [5]string) {
+func concurrently(frates [5]string, parameters [5][]string, jsgf_buffers [5][]byte, audio_buffers [5][]byte) [][]xyz_plus.Utt {
 
 	var results [][]xyz_plus.Utt
-	ch := make(chan []xyz_plus.Utt)
+	ch := make(chan []xyz_plus.Utt, 1)
+	//var id = []int{1, 2, 3, 4, 5}
 	var wg sync.WaitGroup
 
 	//n := len(wavs)
 	//wg.Add(n)
 	start := time.Now()
-	for i := 2; i < 5; i++ {
-		jsgf_buffer, err := os.ReadFile(jsgfs[i])
-		check(err)
-		audio_buffer, err := os.ReadFile(wavs[i])
-		check(err)
+	for i := 0; i < 5; i++ {
+
 		wg.Add(1)
 
-		go call_to_ps_wg_chan(jsgf_buffer, audio_buffer, parameters[i], &wg, ch)
+		go call_to_ps_wg_chan(jsgf_buffers[i], audio_buffers[i], parameters[i], &wg, ch)
 	}
-
-	go func() {
-		wg.Wait()
-		close(ch)
-	}()
 
 	// go func() {
 	// 	for v := range ch {
 	// 		results = append(results, v)
 	// 	}
 	// }()
-
 	// wg.Wait()
 	// close(ch)
+
+	go func() {
+		wg.Wait()
+		close(ch)
+	}()
+
+	//time.Sleep(1000 * time.Millisecond)
+	//Gathering or displaying results:
 	for v := range ch {
 		results = append(results, v)
 	}
+	// for elem := range ch {
+	// 	fmt.Println(elem)
+	// }
 
 	elapsed := time.Since(start)
 
-	// for i := range messages {
-	// 	fmt.Println(i)
-	// }
-
-	fmt.Println("Concurrently (multithreaded-encapsulated): ")
-	// for result := range results {
-	// 	fmt.Println(result)
-	// }
-	fmt.Println(results)
+	// fmt.Println("Concurrently (multithreaded-encapsulated): ")
+	// // for result := range results {
+	// // 	fmt.Println(result)
+	// // }
+	// fmt.Println(results)
 	fmt.Printf(">>>> Timing: %s\n", elapsed)
-	fmt.Println()
-	// var results[][]int
-	// for r := range resultChan {
-	// 	result = append(result, r)
-	// }
+	// fmt.Println()
 
-	// fmt.Println(result)
+	return results
 }
 
-func sequentially(frates [5]string, parameters [5][]string, jsgfs [5]string, wavs [5]string) {
+func sequentially(frates [5]string, parameters [5][]string, jsgfs [5][]byte, wavs [5][]byte) {
 	n := len(wavs)
 	starti := time.Now()
 	for i := 0; i < n; i++ {
@@ -147,15 +141,16 @@ func check(e error) {
 	}
 }
 
-func test_ps(frate string, jsgf_filename string, wav_filename string, parameters []string) {
-	jsgf_buffer, err := os.ReadFile(jsgf_filename)
-	check(err)
-	audio_buffer, err := os.ReadFile(wav_filename)
-	check(err)
+func test_ps(frate string, jsgf_buffer []byte, audio_buffer []byte, parameters []string) {
+	// jsgf_buffer, err := os.ReadFile(jsgf_filename)
+	// check(err)
+	// audio_buffer, err := os.ReadFile(wav_filename)
+	// check(err)
 
 	fmt.Println("--- frate = ", frate)
 	starti := time.Now()
-	var r = Ps(jsgf_buffer, audio_buffer, parameters)
+	//var r = Ps(jsgf_buffer, audio_buffer, parameters)
+	var r = xyz_plus.Ps_plus_call(jsgf_buffer, audio_buffer, parameters)
 	elapsedi := time.Since(starti)
 	fmt.Printf(">>>> Timing: %s\n", elapsedi)
 	fmt.Println(r)
@@ -163,54 +158,54 @@ func test_ps(frate string, jsgf_filename string, wav_filename string, parameters
 
 }
 
-func Ps(jsgf_buffer []byte, audio_buffer []byte, params []string) []xyz_plus.Utt {
-	result := []string{"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"}
+// func Ps(jsgf_buffer []byte, audio_buffer []byte, params []string) []xyz_plus.Utt {
+// 	result := []string{"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"}
 
-	xyz_plus.Ps_plus_call(jsgf_buffer, audio_buffer, params, result)
+// 	xyz_plus.Ps_plus_call(jsgf_buffer, audio_buffer, params, result)
 
-	//Adapting result from coded string to utt struct
-	if strings.Contains(result[0], "**") {
-		raw := strings.Split(result[0], "**")
+// 	//Adapting result from coded string to utt struct
+// 	if strings.Contains(result[0], "**") {
+// 		raw := strings.Split(result[0], "**")
 
-		if len(raw) < 2 {
-			fmt.Println("xyzpocketsphinx: problems!")
-		}
+// 		if len(raw) < 2 {
+// 			fmt.Println("xyzpocketsphinx: problems!")
+// 		}
 
-		//fmt.Printf("%T", raw)
-		fields := strings.Split(raw[0], "*")
+// 		//fmt.Printf("%T", raw)
+// 		fields := strings.Split(raw[0], "*")
 
-		//fmt.Println(fields)
-		// hyp := fields[0]
-		// score := fields[1]
+// 		//fmt.Println(fields)
+// 		// hyp := fields[0]
+// 		// score := fields[1]
 
-		//fmt.Println(hyp)
-		//fmt.Println(strings.Split(score, ","))
-		utts := []xyz_plus.Utt{}
-		//var utts = make([]Utt, len(fields)-2)
+// 		//fmt.Println(hyp)
+// 		//fmt.Println(strings.Split(score, ","))
+// 		utts := []xyz_plus.Utt{}
+// 		//var utts = make([]Utt, len(fields)-2)
 
-		for i := 0; i < len(fields)-2; i++ {
-			parts := strings.Split(fields[2:][i], ",")
-			phoneme := parts[0]
-			text_start := parts[1]
-			text_end := parts[2]
-			start, serr := strconv.Atoi(text_start)
-			end, eerr := strconv.Atoi(text_end)
+// 		for i := 0; i < len(fields)-2; i++ {
+// 			parts := strings.Split(fields[2:][i], ",")
+// 			phoneme := parts[0]
+// 			text_start := parts[1]
+// 			text_end := parts[2]
+// 			start, serr := strconv.Atoi(text_start)
+// 			end, eerr := strconv.Atoi(text_end)
 
-			if phoneme != "(NULL)" {
-				//fmt.Println(phoneme, start, end)
-				//utts = append(utts, xyz_plus.Utt{phoneme, int32(start), int32(end)})
-				utts = append(utts, xyz_plus.Utt{Text: phoneme, Start: int32(start), End: int32(end)})
+// 			if phoneme != "(NULL)" {
+// 				//fmt.Println(phoneme, start, end)
+// 				//utts = append(utts, xyz_plus.Utt{phoneme, int32(start), int32(end)})
+// 				utts = append(utts, xyz_plus.Utt{Text: phoneme, Start: int32(start), End: int32(end)})
 
-				if serr != nil || eerr != nil {
-					fmt.Println(serr, eerr)
-				}
-			}
-		}
-		return utts
-	} else {
-		return nil
-	}
-}
+// 				if serr != nil || eerr != nil {
+// 					fmt.Println(serr, eerr)
+// 				}
+// 			}
+// 		}
+// 		return utts
+// 	} else {
+// 		return nil
+// 	}
+// }
 
 func readParams(args []string) map[string]string {
 
@@ -485,10 +480,24 @@ func main() {
 	wavs[3] = getValue("-infile", params80)
 	wavs[4] = getValue("-infile", params91)
 
-	//This works, because it is serialised
-	//sequentially(frates, parameters, jsgfs, wavs)
+	var err error
+	var jsgf_buffers [5][]byte
+	for i := 0; i < 5; i++ {
+		jsgf_buffers[i], err = os.ReadFile(jsgfs[i])
+		check(err)
+	}
 
-	concurrently(frates, parameters, jsgfs, wavs)
+	var wav_buffers [5][]byte
+	for i := 0; i < 5; i++ {
+		wav_buffers[i], err = os.ReadFile(wavs[i])
+		check(err)
+	}
+
+	//This works, because it is serialised
+	//sequentially(frates, parameters, jsgf_buffers, wav_buffers)
+
+	results := concurrently(frates, parameters, jsgf_buffers, wav_buffers)
+	fmt.Println(results)
 	//concurrently_int(5)
 
 }
