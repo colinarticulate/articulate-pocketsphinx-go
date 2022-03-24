@@ -99,23 +99,6 @@ POCKETSPHINX_EXPORT
 ps_decoder_t *ps_init(cmd_ln_t *config);
 
 /**
- * Initialize the decoder from a configuration object.
- *
- * @note The decoder retains ownership of the pointer
- * <code>config</code>, so if you are not going to use it
- * elsewhere, you can free it.
- *
- * @param config a command-line structure, as created by
- * cmd_ln_parse_r() or cmd_ln_parse_file_r().
- * 
- * @param buffer a pointer to data in memory holding jsgf info.
- * @param size holds the size of the buffer.
- */
-POCKETSPHINX_EXPORT
-ps_decoder_t *ps_init_buffered(cmd_ln_t *config, void *buffer, size_t size);
-
-
-/**
  * Reinitialize the decoder with updated configuration.
  *
  * This function allows you to switch the acoustic model, dictionary,
@@ -134,30 +117,6 @@ ps_decoder_t *ps_init_buffered(cmd_ln_t *config, void *buffer, size_t size);
  */
 POCKETSPHINX_EXPORT
 int ps_reinit(ps_decoder_t *ps, cmd_ln_t *config);
-
-/**
- * Reinitialize the decoder with updated configuration.
- *
- * This function allows you to switch the acoustic model, dictionary,
- * or other configuration without creating an entirely new decoding
- * object.
- *
- * @note The decoder retains ownership of the pointer
- * <code>config</code>, so you must not attempt to free it manually.
- * If you wish to reuse it elsewhere, call cmd_ln_retain() on it.
- *
- * @param ps Decoder.
- * @param config An optional new configuration to use.  If this is
- *               NULL, the previous configuration will be reloaded,
- *               with any changes applied.
- * 
- * @param buffer a pointer to data in memory holding jsgf info.
- * @param size holds the size of the buffer.
- * 
- * @return 0 for success, <0 for failure.
- */
-POCKETSPHINX_EXPORT
-int ps_reinit_buffered(ps_decoder_t *ps, cmd_ln_t *config, void *buffer, size_t size);
 
 /**
  * Returns the argument definitions used in ps_init().

@@ -1,5 +1,50 @@
 //Inspired by:
 //https://sourceforge.net/p/cmusphinx/discussion/help/thread/a445aa5c/
+//----------------------------------------------------- pocketsphinx.c
+/* System headers. */
+#include <stdio.h>
+#include <assert.h>
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
+/* SphinxBase headers. */
+#include <xyzsphinxbase/err.h>
+#include <xyzsphinxbase/strfuncs.h>
+#include <xyzsphinxbase/filename.h>
+#include <xyzsphinxbase/pio.h>
+#include <xyzsphinxbase/jsgf.h>
+#include <xyzsphinxbase/hash_table.h>
+
+/* Local headers. */
+#include "cmdln_macro.h"
+#include "pocketsphinx.h"
+#include "pocketsphinx_internal.h"
+#include "ps_lattice_internal.h"
+#include "phone_loop_search.h"
+#include "kws_search.h"
+#include "fsg_search_internal.h"
+#include "ngram_search.h"
+#include "ngram_search_fwdtree.h"
+#include "ngram_search_fwdflat.h"
+#include "allphone_search.h"
+#include "state_align_search.h"
+
+static const arg_t ps_args_def[] = {
+    POCKETSPHINX_OPTIONS,
+    CMDLN_EMPTY_OPTION
+};
+
+/* Feature and front-end parameters that may be in feat.params */
+static const arg_t feat_defn[] = {
+    waveform_to_cepstral_command_line_macro(),
+    cepstral_to_feature_command_line_macro(),
+    CMDLN_EMPTY_OPTION
+};
+
+
+//----------------------------------------------------
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
@@ -11,7 +56,7 @@
 #include <sys/select.h>
 #endif
 
-#include <xyzsphinxbase/err.h>
+#include <xyzsphinxbase/err.h> 
 #include <xyzsphinxbase/ad.h>
 
 #include "pocketsphinx.h"
@@ -94,7 +139,7 @@ class XYZ_PocketSphinx {
         int _result_size;
 
         //void XYZ_PocketPsphinx(void* jsgf_buffer, size_t jsgf_buffer_size, void* audio_buffer, size_t audio_buffer_size, int argc, char **argv) {
-        void init_data(void* jsgf_buffer, size_t jsgf_buffer_size, void* audio_buffer, size_t audio_buffer_size, int argc, char **argv) {
+        void init(void* jsgf_buffer, size_t jsgf_buffer_size, void* audio_buffer, size_t audio_buffer_size, int argc, char **argv) {
             _jsgf_buffer = jsgf_buffer;
             _jsgf_buffer_size = jsgf_buffer_size;
             _audio_buffer = audio_buffer;
@@ -138,7 +183,10 @@ class XYZ_PocketSphinx {
             }
 
             ps_default_search_args(_config);
-            _ps = ps_init_buffered(_config, _jsgf_buffer, _jsgf_buffer_size);
+
+            //_ps = ps_init_buffered(_config, _jsgf_buffer, _jsgf_buffer_size);
+            ps_plus_init();
+
             if (_ps == NULL) {
                 cmd_ln_free_r(_config);
                 return 1;
@@ -150,23 +198,25 @@ class XYZ_PocketSphinx {
             return 0;
         }
 
-        void terminate_recognition(){
+
+        void terminate(){
             ps_free(_ps);
             cmd_ln_free_r(_config);
-        }
-
-        void terminate_data(){
+            
+            
             for(int i =0; i< _argc; i++){
                 free(_argv[i]);
             }
+
             free(_argv);
         }
 
 
-        int retrieve_results(char *sresult){
+        int retrieve_results(void){
 
             char buffer[256];
             buffer[0]='\0';
+            _result[0]='\0';
             /* Log a backtrace if requested. */
             if (cmd_ln_boolean_r(_config, "-backtrace")) {
                 // FILE *fresult=NULL;
@@ -183,7 +233,7 @@ class XYZ_PocketSphinx {
                 if (hyp != NULL) {
                     //E_INFO("%s (%d)\n", hyp, score);
                     sprintf(buffer, "%s*%d*", hyp, score);
-                    strcat(sresult, buffer);
+                    strcat(_result, buffer);
                     //E_INFO_NOFN("%-20s %-5s %-5s\n", "word", "start", "end");
 
                     // fprintf(fresult, "%s (%d)\n", hyp, score);
@@ -203,13 +253,13 @@ class XYZ_PocketSphinx {
                         
                             //fprintf(fresult, "%-20s %-5d %-5d\n", word, sf, ef);
                             sprintf(buffer, "%s,%d,%-d*", word, sf, ef);
-                            strcat(sresult, buffer);
+                            strcat(_result, buffer);
                             //printf("%s\n", sresult);
                             
                             //fflush(fresult);
                         }
                     }
-                    strcat(sresult,"*");
+                    strcat(_result,"*");
                 }
                 
                 //err=fclose(fresult);
@@ -223,7 +273,7 @@ class XYZ_PocketSphinx {
 
             } 
 
-            return strlen(sresult);
+            return strlen(_result);
         }
 
 
@@ -277,7 +327,7 @@ class XYZ_PocketSphinx {
                 if (!in_speech && utt_started) {
                     ps_end_utt(_ps);
                     //hyp = ps_get_hyp(ps, NULL);
-                    _result_size = retrieve_results(_result);
+                    _result_size = retrieve_results();
                     // if (hyp != NULL)
                     // printf("%s\n", hyp);
                     
@@ -290,12 +340,12 @@ class XYZ_PocketSphinx {
                 }
                 loop++;
             }
-            printf("loops: %d\n", loop);
+           // printf("loops: %d\n", loop);
             ps_end_utt(_ps);
             if (utt_started) {
 
                 //hyp = ps_get_hyp(ps, NULL);
-                _result_size = retrieve_results(_result);
+                _result_size = retrieve_results();
             //     if (hyp != NULL) {
             // 	    printf("%s\n", hyp);
             //         //fprintf(fresult, "%s\n", hyp);
@@ -313,4 +363,307 @@ class XYZ_PocketSphinx {
 
         }
 
+        
+        void ps_plus_init(void) //d(cmd_ln_t *config, void *buffer, size_t size) // buffer for jsgf grammar
+        {
+            //ps_decoder_t *ps;
+            
+            if (!_config) {
+            E_ERROR("No configuration specified");
+            //return NULL;
+            }
+
+            _ps = (ps_decoder_t*)ckd_calloc(1, sizeof(*_ps));
+            _ps->refcount = 1;
+            if (ps_plus_reinit( ) < 0) {//ered(ps, config, buffer, size) < 0) {
+                ps_free(_ps);
+                //return NULL;
+            }
+            //return ps;
+        }
+
+        int
+        ps_plus_reinit(void) //(ps_decoder_t *ps, cmd_ln_t *config, void *buffer, size_t size) // buffer for jsgf grammar
+        {
+            const char *path;
+            const char *keyphrase;
+            int32 lw;
+
+            if (_config && _config != _ps->config) {
+                cmd_ln_free_r(_ps->config);
+                _ps->config = cmd_ln_retain(_config);
+            }
+
+            /* Set up logging. We need to do this earlier because we want to dump
+            * the information to the configured log, not to the stderr. */
+            // if (_config && cmd_ln_str_r(_ps->config, "-logfn")) {
+            //     if (err_set_logfile(cmd_ln_str_r(_ps->config, "-logfn")) < 0) {
+            //         E_ERROR("Cannot redirect log output\n");
+            //         return -1;
+            //     }
+            // }
+            
+            _ps->mfclogdir = cmd_ln_str_r(_ps->config, "-mfclogdir");
+            _ps->rawlogdir = cmd_ln_str_r(_ps->config, "-rawlogdir");
+            _ps->senlogdir = cmd_ln_str_r(_ps->config, "-senlogdir");
+
+            /* Fill in some default arguments. */
+            //ps_expand_model_config(_ps);
+            ps_expand_model_config(_ps);
+
+            /* Free old searches (do this before other reinit) */
+            ps_free_searches(_ps);
+            _ps->searches = hash_table_new(3, HASH_CASE_YES);
+
+            /* Free old acmod. */
+            acmod_free(_ps->acmod);
+            _ps->acmod = NULL;
+
+            /* Free old dictionary (must be done after the two things above) */
+            dict_free(_ps->dict);
+            _ps->dict = NULL;
+
+            /* Free d2p */
+            dict2pid_free(_ps->d2p);
+            _ps->d2p = NULL;
+
+            /* Logmath computation (used in acmod and search) */
+            if (_ps->lmath == NULL
+                || (logmath_get_base(_ps->lmath) !=
+                    (float64)cmd_ln_float32_r(_ps->config, "-logbase"))) {
+                if (_ps->lmath)
+                    logmath_free(_ps->lmath);
+                _ps->lmath = logmath_init
+                    ((float64)cmd_ln_float32_r(_ps->config, "-logbase"), 0,
+                    cmd_ln_boolean_r(_ps->config, "-bestpath"));
+            }
+
+            /* Acoustic model (this is basically everything that
+            * uttproc.c, senscr.c, and others used to do) */
+            if ((_ps->acmod = acmod_init(_ps->config, _ps->lmath, NULL, NULL)) == NULL)
+                return -1;
+
+
+
+            if (cmd_ln_int32_r(_ps->config, "-pl_window") > 0) {
+                /* Initialize an auxiliary phone loop search, which will run in
+                * "parallel" with FSG or N-Gram search. */
+                if ((_ps->phone_loop =
+                    phone_loop_search_init(_ps->config, _ps->acmod, _ps->dict)) == NULL)
+                    return -1;
+                hash_table_enter(_ps->searches,
+                                ps_search_name(_ps->phone_loop),
+                                _ps->phone_loop);
+            }
+
+            /* Dictionary and triphone mappings (depends on acmod). */
+            /* FIXME: pass config, change arguments, implement LTS, etc. */
+            if ((_ps->dict = dict_init(_ps->config, _ps->acmod->mdef)) == NULL)
+                return -1;
+            if ((_ps->d2p = dict2pid_build(_ps->acmod->mdef, _ps->dict)) == NULL)
+                return -1;
+
+            lw = cmd_ln_float32_r(_ps->config, "-lw");
+
+            /* Determine whether we are starting out in FSG or N-Gram search mode.
+            * If neither is used skip search initialization. */
+
+            /* Load KWS if one was specified in config */
+            if ((keyphrase = cmd_ln_str_r(_ps->config, "-keyphrase"))) {
+                if (ps_set_keyphrase(_ps, PS_DEFAULT_SEARCH, keyphrase))
+                    return -1;
+                ps_set_search(_ps, PS_DEFAULT_SEARCH);
+            }
+
+            if ((path = cmd_ln_str_r(_ps->config, "-kws"))) {
+                if (ps_set_kws(_ps, PS_DEFAULT_SEARCH, path))
+                    return -1;
+                ps_set_search(_ps, PS_DEFAULT_SEARCH);
+            }
+
+            /* Load an FSG if one was specified in config */
+            if ((path = cmd_ln_str_r(_ps->config, "-fsg"))) {
+                fsg_model_t *fsg = fsg_model_readfile(path, _ps->lmath, lw);
+                if (!fsg)
+                    return -1;
+                if (ps_set_fsg(_ps, PS_DEFAULT_SEARCH, fsg)) {
+                    fsg_model_free(fsg);
+                    return -1;
+                }
+                fsg_model_free(fsg);
+                ps_set_search(_ps, PS_DEFAULT_SEARCH);
+            }
+            
+            /* Or load a JSGF grammar */
+            if ((path = cmd_ln_str_r(_ps->config, "-jsgf"))) {
+                // if (ps_set_jsgf_file(ps, PS_DEFAULT_SEARCH, path)
+                //     || ps_set_search(ps, PS_DEFAULT_SEARCH))
+                //     return -1;
+                if (ps_set_jsgf_from_buffer(_ps, PS_DEFAULT_SEARCH, path, _jsgf_buffer, _jsgf_buffer_size)
+                    || ps_set_search(_ps, PS_DEFAULT_SEARCH))
+                    return -1;
+
+                
+            }
+
+            if ((path = cmd_ln_str_r(_ps->config, "-allphone"))) {
+                if (ps_set_allphone_file(_ps, PS_DEFAULT_SEARCH, path)
+                        || ps_set_search(_ps, PS_DEFAULT_SEARCH))
+                        return -1;
+            }
+
+            if ((path = cmd_ln_str_r(_ps->config, "-lm")) && 
+                !cmd_ln_boolean_r(_ps->config, "-allphone")) {
+                if (ps_set_lm_file(_ps, PS_DEFAULT_SEARCH, path)
+                    || ps_set_search(_ps, PS_DEFAULT_SEARCH))
+                    return -1;
+            }
+
+            if ((path = cmd_ln_str_r(_ps->config, "-lmctl"))) {
+                const char *name;
+                ngram_model_t *lmset;
+                ngram_model_set_iter_t *lmset_it;
+
+                if (!(lmset = ngram_model_set_read(_ps->config, path, _ps->lmath))) {
+                    E_ERROR("Failed to read language model control file: %s\n", path);
+                    return -1;
+                }
+
+                for(lmset_it = ngram_model_set_iter(lmset);
+                    lmset_it; lmset_it = ngram_model_set_iter_next(lmset_it)) {    
+                    ngram_model_t *lm = ngram_model_set_iter_model(lmset_it, &name);            
+                    E_INFO("adding search %s\n", name);
+                    if (ps_set_lm(_ps, name, lm)) {
+                        ngram_model_set_iter_free(lmset_it);
+                    ngram_model_free(lmset);
+                        return -1;
+                    }
+                }
+                ngram_model_free(lmset);
+
+                name = cmd_ln_str_r(_ps->config, "-lmname");
+                if (name)
+                    ps_set_search(_ps, name);
+                else {
+                    E_ERROR("No default LM name (-lmname) for `-lmctl'\n");
+                    return -1;
+                }
+            }
+
+            /* Initialize performance timer. */
+            _ps->perf.name = "decode";
+            ptmr_init(&_ps->perf);
+
+            return 0;
+        }
+
+        static void
+        ps_expand_model_config(ps_decoder_t *ps)
+        {
+            char const *hmmdir, *featparams;
+
+            /* Disable memory mapping on Blackfin (FIXME: should be uClinux in general). */
+        #ifdef __ADSPBLACKFIN__
+            E_INFO("Will not use mmap() on uClinux/Blackfin.");
+            cmd_ln_set_boolean_r(ps->config, "-mmap", FALSE);
+        #endif
+
+            /* Get acoustic model filenames and add them to the command-line */
+            hmmdir = cmd_ln_str_r(ps->config, "-hmm");
+            ps_expand_file_config(ps, "-mdef", "_mdef", hmmdir, "mdef");
+            ps_expand_file_config(ps, "-mean", "_mean", hmmdir, "means");
+            ps_expand_file_config(ps, "-var", "_var", hmmdir, "variances");
+            ps_expand_file_config(ps, "-tmat", "_tmat", hmmdir, "transition_matrices");
+            ps_expand_file_config(ps, "-mixw", "_mixw", hmmdir, "mixture_weights");
+            ps_expand_file_config(ps, "-sendump", "_sendump", hmmdir, "sendump");
+            ps_expand_file_config(ps, "-fdict", "_fdict", hmmdir, "noisedict");
+            ps_expand_file_config(ps, "-lda", "_lda", hmmdir, "feature_transform");
+            ps_expand_file_config(ps, "-featparams", "_featparams", hmmdir, "feat.params");
+            ps_expand_file_config(ps, "-senmgau", "_senmgau", hmmdir, "senmgau");
+
+            /* Look for feat.params in acoustic model dir. */
+            if ((featparams = cmd_ln_str_r(ps->config, "_featparams"))) {
+                if (NULL !=
+                    cmd_ln_parse_file_r(ps->config, feat_defn, featparams, FALSE))
+                    E_INFO("Parsed model-specific feature parameters from %s\n",
+                            featparams);
+            }
+
+            /* Print here because acmod_init might load feat.params file */
+            if (err_get_logfp() != NULL) {
+            //cmd_ln_print_values_r(ps->config, err_get_logfp(), ps_args());
+            }
+        }           
+
+        static void
+        ps_free_searches(ps_decoder_t *ps)
+        {
+            if (ps->searches) {
+                hash_iter_t *search_it;
+                for (search_it = hash_table_iter(ps->searches); search_it;
+                    search_it = hash_table_iter_next(search_it)) {
+                    ps_search_free((ps_search_t*)hash_entry_val(search_it->ent));
+                }
+                hash_table_free(ps->searches);
+            }
+
+            ps->searches = NULL;
+            ps->search = NULL;
+        }
+
+        static void
+        ps_expand_file_config(ps_decoder_t *ps, const char *arg, const char *extra_arg,
+                        const char *hmmdir, const char *file)
+        {
+            const char *val;
+            if ((val = cmd_ln_str_r(ps->config, arg)) != NULL) {
+            cmd_ln_set_str_extra_r(ps->config, extra_arg, val);
+            } else if (hmmdir == NULL) {
+                cmd_ln_set_str_extra_r(ps->config, extra_arg, NULL);
+            } else {
+                char *tmp = string_join(hmmdir, "/", file, NULL);
+                if (file_exists(tmp))
+                    cmd_ln_set_str_extra_r(ps->config, extra_arg, tmp);
+                else
+                    cmd_ln_set_str_extra_r(ps->config, extra_arg, NULL);
+                ckd_free(tmp);
+            }
+        } 
+
+        static int
+        file_exists(const char *path)
+        {
+            FILE *tmp;
+
+            tmp = fopen(path, "rb");
+            if (tmp) fclose(tmp);
+            return (tmp != NULL);
+        }               
+
 };
+
+
+int ps_plus_call(void* jsgf_buffer, int jsgf_buffer_size, void* audio_buffer, int audio_buffer_size, int argc, char *argv[], char* result, int rsize){
+
+
+    //C version:
+    //resultsize=ps_call_from_go(jsgf_buffer, (size_t)jsgf_buffer_size, audio_buffer, (size_t)audio_buffer_size, argc, argv, sresult);
+
+    //Encapsulated version:
+    XYZ_PocketSphinx ps;
+    ps.init(jsgf_buffer, jsgf_buffer_size, audio_buffer, audio_buffer_size, argc, argv);
+    ps.init_recognition();
+    ps.recognize_from_buffered_file();
+    ps.terminate();
+
+
+
+    if (ps._result_size < rsize && strlen(ps._result)>0){
+
+        for(int i=0;i<ps._result_size; i++){
+            result[i]=(char)ps._result[i];
+        }
+    } 
+
+    return ps._result_size;
+ } 

@@ -137,11 +137,11 @@ int ps_plus_call(void* jsgf_buffer, int jsgf_buffer_size, void* audio_buffer, in
 
     //Encapsulated version:
     XYZ_PocketSphinx ps;
-    ps.init_data(jsgf_buffer, jsgf_buffer_size, audio_buffer, audio_buffer_size, argc, argv);
+    ps.init(jsgf_buffer, jsgf_buffer_size, audio_buffer, audio_buffer_size, argc, argv);
     ps.init_recognition();
     ps.recognize_from_buffered_file();
-    ps.terminate_recognition();
-    ps.terminate_data();
+    ps.terminate();
+
 
 
     if (ps._result_size < rsize && strlen(ps._result)>0){

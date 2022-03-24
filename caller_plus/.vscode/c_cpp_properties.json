@@ -7,9 +7,9 @@
                 //"${workspaceFolder}/../../xyzsphinxbase",
                 //"${workspaceFolder}/../../xyzpocketsphinx",
                 // "${workspaceFolder}/../../xyzsphinxbase/include",
-                // "${workspaceFolder}/../../xyzsphinxbase/include/xyzsphinxbase",
+                //"${workspaceFolder}/../../xyzsphinxbase/include/xyzsphinxbase",
                 // "${workspaceFolder}/../../xyzpocketsphinx/include",
-                // "${workspaceFolder}/../../xyzpocketsphinx/src/libpocketsphinx",
+                //"${workspaceFolder}/../../xyzpocketsphinx/src/libpocketsphinx",
                 // "${workspaceFolder}/../../xyzsphinxbase/src/libsphinxad",
                 // "${workspaceFolder}/../../xyzsphinxbase/src/libsphinxbase"
                 "/usr/local/include/xyzpocketsphinx",

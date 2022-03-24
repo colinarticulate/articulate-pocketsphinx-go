@@ -16,9 +16,9 @@
              ],
             //"envFile" :"$(workspaceFolder)/.env"
             "env":{
-                // "LD_PRELOAD":"${fileDirname}/usr/local/lib/libxyzpocketsphinx.so \
-                // ${fileDirname}/usr/local/lib/libxyzsphinxbase.so \
-                // ${fileDirname}/usr/local/lib/libxyzsphinxad.so"
+                // "LD_PRELOAD":"/usr/local/lib/libxyzpocketsphinx.so \
+                //             /usr/local/lib/libxyzsphinxbase.so \
+                //             /usr/local/lib/libxyzsphinxad.so"
 // //  //               "CGO_ENABLED":"1",
 //                 //"GOPATH": "/home/dbarbera/go",
 //                 //"GOPATH": "/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/caller",

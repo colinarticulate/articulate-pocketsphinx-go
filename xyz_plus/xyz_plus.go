@@ -13,13 +13,18 @@
 package xyz_plus
 
 /*
-#cgo pkg-config: xyzpocketsphinx
-#cgo CFLAGS: -g -O2 -Wall
+//#cgo pkg-config: xyzsphinxbase
+//#cgo pkg-config: xyzpocketsphinx
 
-#cgo CFLAGS: -Wno-unused-result -Wno-unused-but-set-variable -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable
-#cgo LDFLAGS: -lm -lpthread
+#cgo CXXFLAGS: -g -O2
+//#cgo CXXFLAGS: -g -Wall -Og -ggdb
+#cgo CXXFLAGS: -Wno-unused-result -Wno-unused-but-set-variable -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable
+#cgo CXXFLAGS: -I${SRCDIR}/aside_ps_library
+#cgo CXXFLAGS: -I/usr/local/include/xyzsphinxbase
+#cgo CXXFLAGS: -I/usr/local/include/xyzpocketsphinx
 
-#cgo LDFLAGS: -L/usr/local/lib/ -lxyzpocketsphinx -lxyzsphinxbase -lxyzsphinxad
+#cgo LDFLAGS: -lm -lpthread -pthread
+#cgo LDFLAGS: -lxyzsphinxad -lxyzsphinxbase -lxyzpocketsphinx
 
 
 #define intgo swig_intgo
