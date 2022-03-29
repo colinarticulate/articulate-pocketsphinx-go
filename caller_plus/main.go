@@ -15,6 +15,9 @@ import (
 	"github.com/davidbarbera/articulate-pocketsphinx-go/xyz_plus"
 )
 
+//Checking cores
+const n int = 8192
+
 // func call_to_ps(jsgf_buffer []byte, audio_buffer []byte, params []string, c chan []xyz_plus.Utt) {
 
 // 	c <- Ps(jsgf_buffer, audio_buffer, params)
@@ -71,8 +74,8 @@ func concurrently_int(n int) {
 	fmt.Println(result)
 }
 
-func concurrently(frates [5]string, parameters [5][]string, jsgf_buffers [5][]byte, audio_buffers [5][]byte) [][]xyz_plus.Utt {
-
+func concurrently(frates [n]string, parameters [n][]string, jsgf_buffers [n][]byte, audio_buffers [n][]byte) [][]xyz_plus.Utt {
+	m := len(audio_buffers)
 	var results [][]xyz_plus.Utt
 	ch := make(chan []xyz_plus.Utt, 1)
 	//var id = []int{1, 2, 3, 4, 5}
@@ -81,7 +84,7 @@ func concurrently(frates [5]string, parameters [5][]string, jsgf_buffers [5][]by
 	//n := len(wavs)
 	//wg.Add(n)
 	start := time.Now()
-	for i := 0; i < 5; i++ {
+	for i := 0; i < m; i++ {
 
 		wg.Add(1)
 
@@ -123,10 +126,10 @@ func concurrently(frates [5]string, parameters [5][]string, jsgf_buffers [5][]by
 	return results
 }
 
-func sequentially(frates [5]string, parameters [5][]string, jsgfs [5][]byte, wavs [5][]byte) {
-	n := len(wavs)
+func sequentially(frates [n]string, parameters [n][]string, jsgfs [n][]byte, wavs [n][]byte) {
+	m := len(wavs)
 	starti := time.Now()
-	for i := 0; i < n; i++ {
+	for i := 0; i < m; i++ {
 		test_ps(frates[i], jsgfs[i], wavs[i], parameters[i])
 	}
 	elapsedi := time.Since(starti)
@@ -499,10 +502,36 @@ func main() {
 	}
 
 	//This works, because it is serialised
-	//sequentially(frates, parameters, jsgf_buffers, wav_buffers)
+	// sequentially(frates, parameters, jsgf_buffers, wav_buffers)
 
-	results := concurrently(frates, parameters, jsgf_buffers, wav_buffers)
-	fmt.Println(results)
+	// results := concurrently(frates, parameters, jsgf_buffers, wav_buffers)
+	// fmt.Println(results)
 	//concurrently_int(5)
+
+	//Testing how many threads in parallel can we do:
+	var pjsgf_buffers [n][]byte
+	var pwav_buffers [n][]byte
+	var pwavs [n]string
+	var pparameters [n][]string
+	var pjsgfs [n]string
+	var pfrates [n]string
+
+	var f = 1
+	for i := 0; i < n; i++ {
+		pjsgfs[i] = jsgfs[f]
+		pwavs[i] = wavs[f]
+		pfrates[i] = frates[f]
+		pparameters[i] = parameters[f]
+		pjsgf_buffers[i], err = os.ReadFile(pjsgfs[i])
+		check(err)
+		pwav_buffers[i], err = os.ReadFile(pwavs[i])
+		check(err)
+
+	}
+	//sequentially(pfrates, pparameters, pjsgf_buffers, pwav_buffers)
+
+	//results :=
+	concurrently(pfrates, pparameters, pjsgf_buffers, pwav_buffers)
+	//fmt.Println(results)
 
 }
