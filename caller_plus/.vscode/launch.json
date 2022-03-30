@@ -19,10 +19,10 @@
                 // "LD_PRELOAD":"/usr/local/lib/libxyzpocketsphinx.so \
                 //             /usr/local/lib/libxyzsphinxbase.so \
                 //             /usr/local/lib/libxyzsphinxad.so"
-// //  //               "CGO_ENABLED":"1",
+            //   "CGO_ENABLED":"0" //This doesn't work
 //                 //"GOPATH": "/home/dbarbera/go",
 //                 //"GOPATH": "/home/dbarbera/Repositories/mySphinx/go_wrapper/final_wrapper/caller",
-                //"GODEBUG":"cgocheck=2" ,
+                "GODEBUG":"cgocheck=0" , //Use this to remove cgo checks (useful when debugging)
                 // "CGO_CFLAGS": "-g -O2 -Wall -Wl,-rpath=/usr/local/lib -fPIC -Wextra \
                 //                 -Wno-unused-result -Wno-unused-but-set-variable -Wno-unused-function -Wno-unused-parameter -Wno-unused-variable \
                 //                 -I/usr/local/include/ \
