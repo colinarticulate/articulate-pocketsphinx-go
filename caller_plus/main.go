@@ -222,13 +222,13 @@ func test_ps(frate string, jsgf_buffer []byte, audio_buffer []byte, parameters [
 	// audio_buffer, err := os.ReadFile(wav_filename)
 	// check(err)
 
-	fmt.Println("--- frate = ", frate)
+	//fmt.Println("--- frate = ", frate)
 	starti := time.Now()
 	//var r = Ps(jsgf_buffer, audio_buffer, parameters)
 	var r = xyz_plus.Ps_plus_call(jsgf_buffer, audio_buffer, parameters)
 	elapsedi := time.Since(starti)
 	fmt.Printf(">>>> Timing: %s\n", elapsedi)
-	fmt.Println(r)
+	fmt.Println("--- frate = ", frate, r)
 	fmt.Println()
 
 }
@@ -239,14 +239,14 @@ func test_ps_batch(frate string, audio_buffer []byte, parameters []string) {
 	// audio_buffer, err := os.ReadFile(wav_filename)
 	// check(err)
 
-	fmt.Println("--- frate = ", frate)
+	//fmt.Println("--- frate = ", frate)
 	starti := time.Now()
 	//var r = Ps(jsgf_buffer, audio_buffer, parameters)
 	var r = xyz_plus.Ps_batch_plus_call(audio_buffer, parameters)
 	elapsedi := time.Since(starti)
-	fmt.Printf(">>>> Timing: %s\n", elapsedi)
-	fmt.Println(r)
-	fmt.Println()
+	//fmt.Printf(">>>> Timing: %s\n", elapsedi)
+	fmt.Println("--- frate = ", frate, ": ", r, "    \t>>>> Timing: ", elapsedi)
+	//fmt.Println()
 
 }
 
