@@ -17,7 +17,7 @@ import (
 )
 
 //Checking cores
-const n int = 1
+const n int = 5
 
 // func call_to_ps(jsgf_buffer []byte, audio_buffer []byte, params []string, c chan []xyz_plus.Utt) {
 
@@ -413,7 +413,17 @@ func testing_ps_batch() {
 		check(err)
 	}
 
-	test_ps_batch(frates[0], wav_buffers[0], parameters[0])
+	//One case:
+	//test_ps_batch(frates[0], wav_buffers[0], parameters[0])
+
+	//nees n=5
+	sequentially_batch(frates, parameters, wav_buffers)
+
+	//needs n=5
+	results := concurrently_batch(frates, parameters, wav_buffers)
+	for _, result := range results {
+		fmt.Println(result)
+	}
 
 }
 
