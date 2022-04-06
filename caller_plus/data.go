@@ -216,7 +216,7 @@ var params91 = []string{
 
 //--------------------------- BATCH -------------------------
 
-var batch_params72 = string[]{
+var batch_params72 = []string{
 	"pocketsphinx_batch",
 	"-adcin", "yes",
 	"-alpha", "0.97",
@@ -253,7 +253,7 @@ var batch_params72 = string[]{
 	"-wlen", "0.032",
 }
 
-var batch_params80 = string[]{
+var batch_params80 = []string{
 	"pocketsphinx_batch",
 	"-adcin", "yes",
 	"-alpha", "0.97",
@@ -289,8 +289,8 @@ var batch_params80 = string[]{
 	"-wip", "0.25",
 	"-wlen", "0.028",
 }
-	
-var batch_params91 = string[]{
+
+var batch_params91 = []string{
 	"pocketsphinx_batch",
 	"-adcin", "yes",
 	"-alpha", "0.97",
@@ -326,8 +326,8 @@ var batch_params91 = string[]{
 	"-wip", "0.5",
 	"-wlen", "0.024",
 }
-	
-var batch_params105 = string[]{
+
+var batch_params105 = []string{
 	"pocketsphinx_batch",
 	"-adcin", "yes",
 	"-alpha", "0.97",
@@ -363,8 +363,8 @@ var batch_params105 = string[]{
 	"-wip", "0.5",
 	"-wlen", "0.020",
 }
-	
-var batch_params125 = string[]{
+
+var batch_params125 = []string{
 	"pocketsphinx_batch",
 	"-adcin", "yes",
 	"-alpha", "0.97",
@@ -398,5 +398,5 @@ var batch_params125 = string[]{
 	"-vad_threshold", "1",
 	"-wbeam", "1e-10000",
 	"-wip", "0.5",
-	"-wlen", "0.016"
+	"-wlen", "0.016",
 }

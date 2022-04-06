@@ -227,6 +227,7 @@ static void* Swig_malloc(int c) {
 
 
 extern int ps_plus_call(void* jsgf_buffer, int jsgf_buffer_size, void* audio_buffer, int audio_buffer_size, int argc, char *argv[], char *result, int rsize);
+extern int ps_batch_plus_call(void* audio_buffer, int audio_buffer_size, int argc, char *argv[], char *result, int rsize);
 
 #ifdef __cplusplus
 extern "C" {
@@ -319,6 +320,74 @@ intgo _wrap_ps_plus_call_xyz_2460481bc7b6ab28(_goslice_ _swig_go_0, _goslice_ _s
   
   return _swig_go_result;
 }
+
+intgo _wrap_ps_batch_plus_call_xyz_2460481bc7b6ab28( _goslice_ _swig_go_1, _goslice_ _swig_go_2, _goslice_ _swig_go_3) {
+  // void *arg1 = (void *) 0 ;
+  // int arg2 ;
+  void *arg3 = (void *) 0 ;
+  int arg4 ;
+  int arg5 ;
+  char **arg6 ;
+  int result;
+  intgo _swig_go_result;
+  
+  // arg1 = *(void **)&_swig_go_0.array; 
+  // arg2 = (int)_swig_go_0.len; 
+  arg3 = *(void **)&_swig_go_1.array; 
+  arg4 = (int)_swig_go_1.len; 
+  
+  int i;
+  _gostring_* a;
+  
+  arg5 = _swig_go_2.len;
+  a = (_gostring_*) _swig_go_2.array;
+  arg6 = (char **) malloc ((arg5) * sizeof (char *));
+  for ( i = 0; i < arg5; i++) {
+    _gostring_ *ps = &a[i];
+    arg6[i] = (char*)malloc( ((int)(ps->n) + 1)*sizeof(char));
+    memcpy(arg6[i],(char*) ps->p, (int)(ps->n) );
+    arg6[i][ps->n]='\0';
+  }
+  //arg6[arg5]=NULL;
+
+  char *arg7 = (char *) 0 ;
+  int arg8 ;
+ 
+  
+  {
+    _gostring_ *a;
+    char *p;
+    int n;
+    
+    a = (_gostring_*) _swig_go_3.array;
+    p = a[0].p;
+    n = a[0].n;
+    arg7 = (char*)malloc(n + 1);
+    arg8 = n;
+    memcpy(arg7, p, n);
+  }
+ 
+  result = (int)ps_batch_plus_call(arg3,arg4,arg5,arg6,arg7,arg8);
+  _swig_go_result = result; 
+
+  {
+    _gostring_ *a;
+    
+    a = (_gostring_*) _swig_go_3.array;
+    a[0] = Swig_AllocateString(arg7, arg8);
+  }
+    
+  free(arg7);
+  
+  
+  for (i = 0; i < arg5; i++) {
+    free(arg6[i]);
+  }
+  free(arg6);
+  
+  return _swig_go_result;
+}
+
 
 
 #ifdef __cplusplus

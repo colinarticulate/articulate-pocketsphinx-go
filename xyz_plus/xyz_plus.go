@@ -48,6 +48,7 @@ typedef _gostring_ swig_type_3;
 typedef _goslice_ swig_type_4;
 
 extern swig_intgo _wrap_ps_plus_call_xyz_2460481bc7b6ab28(swig_type_1 arg1, swig_type_1 arg2, swig_type_2 arg3, swig_type_4 arg4);
+extern swig_intgo _wrap_ps_batch_plus_call_xyz_2460481bc7b6ab28(swig_type_1 arg2, swig_type_2 arg3, swig_type_4 arg4);
 
 #undef intgo
 */
@@ -55,7 +56,7 @@ import "C"
 
 import (
 	"fmt"
-	//_ "runtime/cgo"
+	_ "runtime/cgo"
 	"strconv"
 	"strings"
 	"sync"
@@ -138,6 +139,36 @@ func Ps_plus_call(arg1 []byte, arg2 []byte, arg3 []string) []Utt {
 		return utts
 	} else {
 		return nil
+	}
+
+}
+
+func Ps_batch_plus_call(arg2 []byte, arg3 []string) string {
+	//var swig_r int
+	//_swig_i_0 := arg1
+	_swig_i_1 := arg2
+	_swig_i_2 := arg3
+	//_swig_i_3 := arg4
+	// swig_r = (int)(C._wrap_ps_plus_call_xyz_2460481bc7b6ab28((*(*C.swig_type_1)(unsafe.Pointer(&_swig_i_0))), (*(*C.swig_type_1)(unsafe.Pointer(&_swig_i_1))), (*(*C.swig_type_2)(unsafe.Pointer(&_swig_i_2))), (*(*C.swig_type_4)(unsafe.Pointer(&_swig_i_3)))))
+
+	// if Swig_escape_always_false {
+	// 	Swig_escape_val = arg1
+	// }
+	result := []string{"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"}
+
+	C._wrap_ps_batch_plus_call_xyz_2460481bc7b6ab28((*(*C.swig_type_1)(unsafe.Pointer(&_swig_i_1))), (*(*C.swig_type_2)(unsafe.Pointer(&_swig_i_2))), (*(*C.swig_type_4)(unsafe.Pointer(&result))))
+
+	//Adapting result from coded string to utt struct
+	if strings.Contains(result[0], ",*") {
+		raw := strings.Split(result[0], ",*")
+
+		if len(raw) < 2 {
+			fmt.Println("xyzpocketsphinx_batch: problems!")
+		}
+
+		return raw[0]
+	} else {
+		return ""
 	}
 
 }
