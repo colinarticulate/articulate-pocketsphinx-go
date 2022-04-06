@@ -10,6 +10,7 @@
 #endif
 
 /* SphinxBase headers. */
+//#include <sphinxbase/err.h>
 #include <xyzsphinxbase/err.h>
 #include <xyzsphinxbase/strfuncs.h>
 #include <xyzsphinxbase/filename.h>
@@ -56,7 +57,7 @@ static const arg_t feat_defn[] = {
 #include <sys/select.h>
 #endif
 
-#include <xyzsphinxbase/err.h> 
+//#include <xyzsphinxbase/err.h> 
 #include <xyzsphinxbase/ad.h>
 
 #include "pocketsphinx.h"
@@ -314,10 +315,12 @@ class XYZ_PocketSphinx {
             E_FATAL("Can not decode mp3 files, convert input file to WAV 16kHz 16-bit mono before decoding.\n");
             }
             //---------------------------------------------------------------------------------------------------
-            int rv;
+            //int rv;
+            //--------------------------------------------------------------------------------------------------------------- (loop)
             ps_start_utt(_ps);
+           
             utt_started = FALSE;
-            int loop = 0;
+            //int loop = 0;
             while ((k = fread(adbuf, sizeof(int16), 2048, file)) > 0) {
                 ps_process_raw(_ps, adbuf, k, FALSE, FALSE);
                 in_speech = ps_get_in_speech(_ps);
@@ -338,7 +341,7 @@ class XYZ_PocketSphinx {
                     ps_start_utt(_ps);
                     utt_started = FALSE;
                 }
-                loop++;
+                //loop++;
             }
            // printf("loops: %d\n", loop);
             ps_end_utt(_ps);
@@ -355,7 +358,13 @@ class XYZ_PocketSphinx {
             // }
             }
             //fclose(fresult);
+            //--------------------------------------------------------------------------------------------------------------- (loop)
 
+
+            // //---- in one go:   
+            // ps_decode_raw(_ps, file, _audio_buffer_size);
+            // _result_size = retrieve_results();
+            // //----- in one go
 
             fclose(file);
             //return _result_size;
@@ -396,12 +405,12 @@ class XYZ_PocketSphinx {
 
             /* Set up logging. We need to do this earlier because we want to dump
             * the information to the configured log, not to the stderr. */
-            // if (_config && cmd_ln_str_r(_ps->config, "-logfn")) {
-            //     if (err_set_logfile(cmd_ln_str_r(_ps->config, "-logfn")) < 0) {
-            //         E_ERROR("Cannot redirect log output\n");
-            //         return -1;
-            //     }
-            // }
+            if (_config && cmd_ln_str_r(_ps->config, "-logfn")) {
+                if (err_set_logfile(cmd_ln_str_r(_ps->config, "-logfn")) < 0) {
+                    E_ERROR("Cannot redirect log output\n");
+                    return -1;
+                }
+            }
             
             _ps->mfclogdir = cmd_ln_str_r(_ps->config, "-mfclogdir");
             _ps->rawlogdir = cmd_ln_str_r(_ps->config, "-rawlogdir");

@@ -16,7 +16,7 @@ import (
 )
 
 //Checking cores
-const n int = 64
+const n int = 1
 
 // func call_to_ps(jsgf_buffer []byte, audio_buffer []byte, params []string, c chan []xyz_plus.Utt) {
 
@@ -516,7 +516,7 @@ func main() {
 	var pjsgfs [n]string
 	var pfrates [n]string
 
-	var f = 1
+	var f = 0
 	for i := 0; i < n; i++ {
 		pjsgfs[i] = jsgfs[f]
 		pwavs[i] = wavs[f]
