@@ -33,7 +33,7 @@ func call_to_ps_wg_chan(jsgf_buffer []byte, audio_buffer []byte, params []string
 
 }
 
-func call_to_ps_batch_wg_chan(audio_buffer []byte, params []string, wg *sync.WaitGroup, resultChan chan<- string) {
+func call_to_ps_batch_wg_chan(audio_buffer []byte, params []string, wg *sync.WaitGroup, resultChan chan<- []string) {
 	defer wg.Done()
 
 	//resultChan <- Ps(jsgf_buffer, audio_buffer, params)
@@ -135,10 +135,10 @@ func concurrently(frates [n]string, parameters [n][]string, jsgf_buffers [n][]by
 	return results
 }
 
-func concurrently_batch(frates [n]string, parameters [n][]string, audio_buffers [n][]byte) []string {
+func concurrently_batch(frates [n]string, parameters [n][]string, audio_buffers [n][]byte) [][]string {
 	m := len(audio_buffers)
-	var results []string
-	ch := make(chan string, 1)
+	var results [][]string
+	ch := make(chan []string, 1)
 	//var id = []int{1, 2, 3, 4, 5}
 	var wg sync.WaitGroup
 

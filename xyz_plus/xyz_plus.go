@@ -143,7 +143,7 @@ func Ps_plus_call(arg1 []byte, arg2 []byte, arg3 []string) []Utt {
 
 }
 
-func Ps_batch_plus_call(arg2 []byte, arg3 []string) string {
+func Ps_batch_plus_call(arg2 []byte, arg3 []string) []string {
 	//var swig_r int
 	//_swig_i_0 := arg1
 	_swig_i_1 := arg2
@@ -166,9 +166,11 @@ func Ps_batch_plus_call(arg2 []byte, arg3 []string) string {
 			fmt.Println("xyzpocketsphinx_batch: problems!")
 		}
 
-		return raw[0]
+		numbers := strings.Split(raw[0], ",")
+
+		return numbers
 	} else {
-		return ""
+		return []string{""}
 	}
 
 }
