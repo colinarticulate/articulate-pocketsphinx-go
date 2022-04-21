@@ -1,0 +1,298 @@
+INFO: pocketsphinx.c(152): Parsed model-specific feature parameters from ./../Models/Bare_pitch_loudness_speed_tempo.ci_cont/feat.params
+Current configuration:
+[NAME]			[DEFLT]		[VALUE]
+-agc			none		none
+-agcthresh		2.0		2.000000e+00
+-allphone				
+-allphone_ci		yes		yes
+-alpha			0.97		9.700000e-01
+-ascale			20.0		2.000000e+01
+-aw			1		1
+-backtrace		no		yes
+-beam			1e-48		0.000000e+00
+-bestpath		yes		no
+-bestpathlw		9.5		9.500000e+00
+-ceplen			13		13
+-cmn			live		batch
+-cmninit		40,3,-1		60.83,7.43,-6.07,4.54,-3.88,9.48,-5.85,-16.81,-13.89,-3.82,2.39,2.53,-1.88
+-compallsen		no		no
+-dict					./../Dictionaries/art_db_v2_inference.phone
+-dictcase		no		no
+-dither			no		yes
+-doublebw		no		yes
+-ds			1		1
+-fdict					
+-feat			1s_c_d_dd	1s_c_d_dd
+-featparams				./../Models/Bare_pitch_loudness_speed_tempo.ci_cont/feat.params
+-fillprob		1e-8		1.000000e-08
+-frate			100		80
+-fsg					
+-fsgusealtpron		yes		yes
+-fsgusefiller		yes		no
+-fwdflat		yes		no
+-fwdflatbeam		1e-64		1.000000e-64
+-fwdflatefwid		4		4
+-fwdflatlw		8.5		8.500000e+00
+-fwdflatsfwin		25		25
+-fwdflatwbeam		7e-29		7.000000e-29
+-fwdtree		yes		yes
+-hmm					./../Models/Bare_pitch_loudness_speed_tempo.ci_cont
+-input_endian		little		little
+-jsgf					/home/dbarbera/Data/audio_clips/Temp_cbc59b08-2c34-406e-b78e-b4d6a63be6e9/forced_align_31aa664d-2213-4fac-91d0-43783f30556f_allowed1_philip_fixed_trimmed.wav.jsgf
+-keyphrase				
+-kws					
+-kws_delay		10		10
+-kws_plp		1e-1		1.000000e-01
+-kws_threshold		1e-30		1.000000e-30
+-latsize		5000		5000
+-lda					
+-ldadim			0		0
+-lifter			0		22
+-lm					
+-lmctl					
+-lmname					
+-logbase		1.0001		1.000100e+00
+-logfn					/home/dbarbera/Data/audio_clips/Temp_cbc59b08-2c34-406e-b78e-b4d6a63be6e9/5d293ec2-009a-4f7d-850d-e1904a690ac7.log
+-logspec		no		no
+-lowerf			133.33334	1.300000e+02
+-lpbeam			1e-40		0.000000e+00
+-lponlybeam		7e-29		0.000000e+00
+-lw			6.5		6.000000e+00
+-maxhmmpf		30000		-1
+-maxwpf			-1		-1
+-mdef					
+-mean					
+-mfclogdir				
+-min_endfr		0		0
+-mixw					
+-mixwfloor		0.0000001	1.000000e-07
+-mllr					
+-mmap			yes		yes
+-ncep			13		13
+-nfft			512		512
+-nfilt			40		25
+-nwpen			1.0		1.000000e+00
+-pbeam			1e-48		0.000000e+00
+-pip			1.0		1.150000e+00
+-pl_beam		1e-10		1.000000e-10
+-pl_pbeam		1e-10		1.000000e-10
+-pl_pip			1.0		1.000000e+00
+-pl_weight		3.0		3.000000e+00
+-pl_window		5		0
+-rawlogdir				
+-remove_dc		no		no
+-remove_noise		yes		yes
+-remove_silence		yes		yes
+-round_filters		yes		yes
+-samprate		16000		1.600000e+04
+-seed			-1		-1
+-sendump				
+-senlogdir				
+-senmgau				
+-silprob		0.005		5.000000e-03
+-smoothspec		no		no
+-svspec					
+-tmat					
+-tmatfloor		0.0001		1.000000e-04
+-topn			4		6
+-topn_beam		0		0
+-toprule				
+-transform		legacy		dct
+-unit_area		yes		yes
+-upperf			6855.4976	6.800000e+03
+-uw			1.0		1.000000e+00
+-vad_postspeech		50		20
+-vad_prespeech		20		5
+-vad_startspeech	10		5
+-vad_threshold		3.0		1.500000e+00
+-var					
+-varfloor		0.0001		1.000000e-04
+-varnorm		no		no
+-verbose		no		no
+-warp_params				
+-warp_type		inverse_linear	inverse_linear
+-wbeam			7e-29		0.000000e+00
+-wip			0.65		2.500000e-01
+-wlen			0.025625	2.800000e-02
+
+INFO: fe_interface.c(324): Using -1 as the seed.
+INFO: feat.c(713): Initializing feature stream to type: '1s_c_d_dd', ceplen=13, CMN='batch', VARNORM='no', AGC='none'
+INFO: mdef.c(518): Reading model definition: ./../Models/Bare_pitch_loudness_speed_tempo.ci_cont/mdef
+INFO: bin_mdef.c(180): Allocating 252 * 8 bytes (1 KiB) for CD tree
+INFO: tmat.c(148): Reading HMM transition probability matrices: ./../Models/Bare_pitch_loudness_speed_tempo.ci_cont/transition_matrices
+INFO: acmod.c(113): Attempting to use PTM computation module
+INFO: ms_gauden.c(127): Reading mixture gaussian parameter: ./../Models/Bare_pitch_loudness_speed_tempo.ci_cont/means
+INFO: ms_gauden.c(242): 186 codebook, 1 feature, size: 
+INFO: ms_gauden.c(244):  13x39
+INFO: ms_gauden.c(127): Reading mixture gaussian parameter: ./../Models/Bare_pitch_loudness_speed_tempo.ci_cont/variances
+INFO: ms_gauden.c(242): 186 codebook, 1 feature, size: 
+INFO: ms_gauden.c(244):  13x39
+INFO: ms_gauden.c(304): 55 variance values floored
+INFO: ptm_mgau.c(807): Number of codebooks doesn't match number of ciphones, doesn't look like PTM: 186 != 62
+INFO: acmod.c(115): Attempting to use semi-continuous computation module
+INFO: ms_gauden.c(127): Reading mixture gaussian parameter: ./../Models/Bare_pitch_loudness_speed_tempo.ci_cont/means
+INFO: ms_gauden.c(242): 186 codebook, 1 feature, size: 
+INFO: ms_gauden.c(244):  13x39
+INFO: ms_gauden.c(127): Reading mixture gaussian parameter: ./../Models/Bare_pitch_loudness_speed_tempo.ci_cont/variances
+INFO: ms_gauden.c(242): 186 codebook, 1 feature, size: 
+INFO: ms_gauden.c(244):  13x39
+INFO: ms_gauden.c(304): 55 variance values floored
+INFO: acmod.c(117): Falling back to general multi-stream GMM computation
+INFO: ms_gauden.c(127): Reading mixture gaussian parameter: ./../Models/Bare_pitch_loudness_speed_tempo.ci_cont/means
+INFO: ms_gauden.c(242): 186 codebook, 1 feature, size: 
+INFO: ms_gauden.c(244):  13x39
+INFO: ms_gauden.c(127): Reading mixture gaussian parameter: ./../Models/Bare_pitch_loudness_speed_tempo.ci_cont/variances
+INFO: ms_gauden.c(242): 186 codebook, 1 feature, size: 
+INFO: ms_gauden.c(244):  13x39
+INFO: ms_gauden.c(304): 55 variance values floored
+INFO: ms_senone.c(149): Reading senone mixture weights: ./../Models/Bare_pitch_loudness_speed_tempo.ci_cont/mixture_weights
+INFO: ms_senone.c(200): Truncating senone logs3(pdf) values by 10 bits
+INFO: ms_senone.c(207): Not transposing mixture weights in memory
+INFO: ms_senone.c(266): Read mixture weights for 186 senones: 1 features x 13 codewords
+INFO: ms_senone.c(320): Mapping senones to individual codebooks
+INFO: ms_mgau.c(144): The value of topn: 6
+INFO: dict.c(318): Allocating 4161 * 32 bytes (130 KiB) for word entries
+INFO: dict.c(333): Reading main dictionary: ./../Dictionaries/art_db_v2_inference.phone
+INFO: dict.c(212): Dictionary size 62, allocated 0 KiB for strings, 0 KiB for phones
+INFO: dict.c(336): 62 words read
+INFO: dict.c(358): Reading filler dictionary: ./../Models/Bare_pitch_loudness_speed_tempo.ci_cont/noisedict
+INFO: dict.c(212): Dictionary size 65, allocated 0 KiB for strings, 0 KiB for phones
+INFO: dict.c(361): 3 words read
+INFO: dict2pid.c(396): Building PID tables for dictionary
+INFO: dict2pid.c(404): Allocating 62^3 * 2 bytes (465 KiB) for word-initial triphones
+INFO: dict2pid.c(131): Allocated 92752 bytes (90 KiB) for word-final triphones
+INFO: dict2pid.c(195): Allocated 92752 bytes (90 KiB) for single-phone word triphones
+INFO: jsgf.c(708): Defined rule: <test.g00000>
+INFO: jsgf.c(708): Defined rule: <test.g00001>
+INFO: jsgf.c(708): Defined rule: <test.g00002>
+INFO: jsgf.c(708): Defined rule: <test.g00003>
+INFO: jsgf.c(708): Defined rule: <test.g00004>
+INFO: jsgf.c(708): Defined rule: <test.g00005>
+INFO: jsgf.c(708): Defined rule: <test.g00006>
+INFO: jsgf.c(708): Defined rule: <test.g00007>
+INFO: jsgf.c(708): Defined rule: <test.g00008>
+INFO: jsgf.c(708): Defined rule: <test.g00009>
+INFO: jsgf.c(708): Defined rule: <test.g00010>
+INFO: jsgf.c(708): Defined rule: <test.g00011>
+INFO: jsgf.c(708): Defined rule: <test.g00012>
+INFO: jsgf.c(708): Defined rule: <test.g00013>
+INFO: jsgf.c(708): Defined rule: <test.g00014>
+INFO: jsgf.c(708): Defined rule: <test.g00015>
+INFO: jsgf.c(708): Defined rule: <test.g00016>
+INFO: jsgf.c(708): Defined rule: <test.g00017>
+INFO: jsgf.c(708): Defined rule: <test.g00018>
+INFO: jsgf.c(708): Defined rule: <test.g00019>
+INFO: jsgf.c(708): Defined rule: <test.g00020>
+INFO: jsgf.c(708): Defined rule: <test.g00021>
+INFO: jsgf.c(708): Defined rule: <test.g00022>
+INFO: jsgf.c(708): Defined rule: <test.g00023>
+INFO: jsgf.c(708): Defined rule: <test.g00024>
+INFO: jsgf.c(708): Defined rule: <test.g00025>
+INFO: jsgf.c(708): Defined rule: <test.g00026>
+INFO: jsgf.c(708): Defined rule: <test.g00027>
+INFO: jsgf.c(708): Defined rule: <test.g00028>
+INFO: jsgf.c(708): Defined rule: <test.g00029>
+INFO: jsgf.c(708): Defined rule: <test.g00030>
+INFO: jsgf.c(708): Defined rule: <test.g00031>
+INFO: jsgf.c(708): Defined rule: <test.g00032>
+INFO: jsgf.c(708): Defined rule: <test.g00033>
+INFO: jsgf.c(708): Defined rule: <test.g00034>
+INFO: jsgf.c(708): Defined rule: <test.g00035>
+INFO: jsgf.c(708): Defined rule: <test.g00036>
+INFO: jsgf.c(708): Defined rule: <test.g00037>
+INFO: jsgf.c(708): Defined rule: <test.g00038>
+INFO: jsgf.c(708): Defined rule: <test.g00039>
+INFO: jsgf.c(708): Defined rule: <test.g00040>
+INFO: jsgf.c(708): Defined rule: <test.g00041>
+INFO: jsgf.c(708): Defined rule: <test.g00042>
+INFO: jsgf.c(708): Defined rule: <test.g00043>
+INFO: jsgf.c(708): Defined rule: <test.g00044>
+INFO: jsgf.c(708): Defined rule: <test.g00045>
+INFO: jsgf.c(708): Defined rule: <test.g00046>
+INFO: jsgf.c(708): Defined rule: <test.g00047>
+INFO: jsgf.c(708): Defined rule: <test.g00048>
+INFO: jsgf.c(708): Defined rule: <test.g00049>
+INFO: jsgf.c(708): Defined rule: <test.g00050>
+INFO: jsgf.c(708): Defined rule: <test.g00051>
+INFO: jsgf.c(708): Defined rule: <test.g00052>
+INFO: jsgf.c(708): Defined rule: <test.g00053>
+INFO: jsgf.c(708): Defined rule: <test.g00054>
+INFO: jsgf.c(708): Defined rule: <test.g00055>
+INFO: jsgf.c(708): Defined rule: <test.g00056>
+INFO: jsgf.c(708): Defined rule: <test.g00057>
+INFO: jsgf.c(708): Defined rule: <test.g00058>
+INFO: jsgf.c(708): Defined rule: <test.g00059>
+INFO: jsgf.c(708): Defined rule: <test.g00060>
+INFO: jsgf.c(708): Defined rule: <test.g00061>
+INFO: jsgf.c(708): Defined rule: <test.g00062>
+INFO: jsgf.c(708): Defined rule: <test.g00063>
+INFO: jsgf.c(708): Defined rule: <test.g00064>
+INFO: jsgf.c(708): Defined rule: <test.g00065>
+INFO: jsgf.c(708): Defined rule: <test.g00066>
+INFO: jsgf.c(708): Defined rule: <test.g00067>
+INFO: jsgf.c(708): Defined rule: <test.g00068>
+INFO: jsgf.c(708): Defined rule: <test.g00069>
+INFO: jsgf.c(708): Defined rule: <test.g00070>
+INFO: jsgf.c(708): Defined rule: <test.g00071>
+INFO: jsgf.c(708): Defined rule: <test.g00072>
+INFO: jsgf.c(708): Defined rule: <test.g00073>
+INFO: jsgf.c(708): Defined rule: <test.g00074>
+INFO: jsgf.c(708): Defined rule: <test.g00075>
+INFO: jsgf.c(708): Defined rule: <test.g00076>
+INFO: jsgf.c(708): Defined rule: <test.g00077>
+INFO: jsgf.c(708): Defined rule: PUBLIC <test.allowed>
+INFO: jsgf.c(708): Defined rule: <test.g00079>
+INFO: jsgf.c(708): Defined rule: <test.any_Cx_sh_sh_d_l>
+INFO: jsgf.c(708): Defined rule: <test.g00081>
+INFO: jsgf.c(708): Defined rule: <test.any_Cx_sh_d_g>
+INFO: jsgf.c(708): Defined rule: <test.g00083>
+INFO: jsgf.c(708): Defined rule: <test.any_vowel_noSlide>
+INFO: jsgf.c(708): Defined rule: <test.g00085>
+INFO: jsgf.c(708): Defined rule: <test.any_Cx_ax_z_p>
+INFO: jsgf.c(708): Defined rule: <test.g00087>
+INFO: jsgf.c(708): Defined rule: <test.any_Cx_sh_p_z_ax_l>
+INFO: jsgf.c(708): Defined rule: <test.g00089>
+INFO: jsgf.c(708): Defined rule: <test.any_Cx_sh_sh_l_ax>
+INFO: jsgf.c(708): Defined rule: <test.g00091>
+INFO: jsgf.c(708): Defined rule: <test.any_Cx_sh_sh_l>
+INFO: jsgf.c(708): Defined rule: <test.g00093>
+INFO: jsgf.c(708): Defined rule: <test.any_Vx_sh_sh_aw_noSlide>
+INFO: jsgf.c(708): Defined rule: <test.g00095>
+INFO: jsgf.c(708): Defined rule: <test.any_Cx_sh_sh_d>
+INFO: jsgf.c(708): Defined rule: <test.g00097>
+INFO: jsgf.c(708): Defined rule: <test.any_Vx_sh_d_g>
+INFO: fsg_model.c(208): Computing transitive closure for null transitions
+INFO: fsg_model.c(270): 8 null transitions added
+INFO: fsg_search.c(226): FSG(beam: -524288, pbeam: -524288, wbeam: -524288; wip: -82, pip: 8)
+INFO: fsg_search.c(174): Added 0 alternate word transitions
+INFO: fsg_lextree.c(108): Allocated 6300 bytes (6 KiB) for left and right context phones
+INFO: fsg_lextree.c(255): 407 HMM nodes in lextree (407 leaves)
+INFO: fsg_lextree.c(257): Allocated 58608 bytes (57 KiB) for all lextree nodes
+INFO: fsg_lextree.c(260): Allocated 58608 bytes (57 KiB) for lextree leafnodes
+INFO: continuous.c(307): pocketsphinx_continuous COMPILED ON: Nov 22 2021, AT: 06:02:19
+
+INFO: cmn_live.c(120): Update from < 60.83  7.43 -6.07  4.54 -3.88  9.48 -5.85 -16.81 -13.89 -3.82  2.39  2.53 -1.88 >
+INFO: cmn_live.c(138): Update to   < 61.09  7.91 -6.36  4.53 -3.75  9.55 -5.95 -16.86 -13.75 -3.68  2.32  2.54 -1.81 >
+INFO: fsg_search.c(861): 104 frames, 38371 HMMs (368/fr), 11058 senones (106/fr), 51064 history entries (491/fr)
+
+INFO: fsg_search.c(876): fsg 0.02 CPU 0.017 xRT
+INFO: fsg_search.c(878): fsg 0.02 wall 0.017 xRT
+INFO: pocketsphinx.c(1204): sil ax l aw d sil (-2182)
+word                 start end   pprob ascr       lscr       lback
+sil                  0     12    1.000 -166       0          1  
+(NULL)               12    12    1.000 0          0          1  
+ax                   13    27    1.000 -381       0          1  
+(NULL)               27    27    1.000 0          0          1  
+l                    28    37    1.000 -330       0          1  
+(NULL)               37    37    1.000 0          0          1  
+aw                   38    78    1.000 -830       0          1  
+(NULL)               78    78    1.000 0          0          1  
+d                    79    88    1.000 -317       0          1  
+(NULL)               88    88    1.000 0          0          1  
+sil                  89    103   1.000 -158       0          1  
+INFO: cmn_live.c(120): Update from < 61.09  7.91 -6.36  4.53 -3.75  9.55 -5.95 -16.86 -13.75 -3.68  2.32  2.54 -1.81 >
+INFO: cmn_live.c(138): Update to   < 61.09  7.91 -6.36  4.53 -3.75  9.55 -5.95 -16.86 -13.75 -3.68  2.32  2.54 -1.81 >
+INFO: fsg_search.c(861): 0 frames, 0 HMMs (0/fr), 0 senones (0/fr), 1 history entries (0/fr)
+
+INFO: fsg_search.c(271): TOTAL fsg 0.02 CPU 0.018 xRT
+INFO: fsg_search.c(274): TOTAL fsg 0.02 wall 0.018 xRT

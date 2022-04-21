@@ -355,7 +355,7 @@ func testing_ps_continuous() {
 		check(err)
 
 	}
-	//sequentially(pfrates, pparameters, pjsgf_buffers, pwav_buffers)
+	sequentially(pfrates, pparameters, pjsgf_buffers, pwav_buffers)
 
 	results := concurrently(pfrates, pparameters, pjsgf_buffers, pwav_buffers)
 	fmt.Println(results)
@@ -429,5 +429,7 @@ func testing_ps_batch() {
 
 //Sorry, quick and dirty:
 func main() {
+	testing_ps_continuous()
 	testing_ps_batch()
+
 }
