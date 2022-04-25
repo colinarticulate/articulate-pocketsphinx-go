@@ -88,7 +88,6 @@ func Ps_plus_call(arg1 []byte, arg2 []byte, arg3 []string) []Utt {
 	_swig_i_0 := arg1
 	_swig_i_1 := arg2
 	_swig_i_2 := arg3
-	fmt.Println("Ps_plus_call:arg3 =", arg3)
 	//_swig_i_3 := arg4
 	// swig_r = (int)(C._wrap_ps_plus_call_xyz_2460481bc7b6ab28((*(*C.swig_type_1)(unsafe.Pointer(&_swig_i_0))), (*(*C.swig_type_1)(unsafe.Pointer(&_swig_i_1))), (*(*C.swig_type_2)(unsafe.Pointer(&_swig_i_2))), (*(*C.swig_type_4)(unsafe.Pointer(&_swig_i_3)))))
 
@@ -149,7 +148,6 @@ func Ps_batch_plus_call(arg2 []byte, arg3 []string) []string {
 	//_swig_i_0 := arg1
 	_swig_i_1 := arg2
 	_swig_i_2 := arg3
-	fmt.Println("Ps_batch_plus_call:arg3 =", arg3)
 	//_swig_i_3 := arg4
 	// swig_r = (int)(C._wrap_ps_plus_call_xyz_2460481bc7b6ab28((*(*C.swig_type_1)(unsafe.Pointer(&_swig_i_0))), (*(*C.swig_type_1)(unsafe.Pointer(&_swig_i_1))), (*(*C.swig_type_2)(unsafe.Pointer(&_swig_i_2))), (*(*C.swig_type_4)(unsafe.Pointer(&_swig_i_3)))))
 
