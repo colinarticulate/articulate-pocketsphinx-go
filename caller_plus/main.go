@@ -429,7 +429,7 @@ func testing_ps_batch() {
 
 //Sorry, quick and dirty:
 func main() {
-	testing_ps_continuous()
+	//testing_ps_continuous()
 	testing_ps_batch()
 
 }
