@@ -1361,7 +1361,7 @@ class XYZ_Batch {
             //         return -1;
             // }
             
-            start=high_resolution_clock::now();
+            //start=high_resolution_clock::now();
             
 
             if ((path = cmd_ln_str_r(_ps->config, "-lmctl"))) {
@@ -1398,10 +1398,10 @@ class XYZ_Batch {
             /* Initialize performance timer. */
             _ps->perf.name = "decode";
             ptmr_init(&_ps->perf);
-            end=high_resolution_clock::now();
+            //end=high_resolution_clock::now();
              //NEED TO KNOW WHAT CONSUMES THE MOST:
-            auto dur_ms = duration<double, std::milli>(end - start).count();
-            printf("\t\t\t\t %lfms\n", dur_ms);
+            // auto dur_ms = duration<double, std::milli>(end - start).count();
+            // printf("\t\t\t\t %lfms\n", dur_ms);
 
             return 0;
         }

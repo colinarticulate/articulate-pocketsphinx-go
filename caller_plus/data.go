@@ -228,6 +228,7 @@ var batch_params72 = []string{
 	"-dict", "/home/dbarbera/Repositories/articulate-pocketsphinx-go/caller_plus/test_data/dictionaries/art_db_v2_inference.phone",
 	"-dither", "yes",
 	"-doublebw", "yes",
+	//"-featparams", "/home/dbarbera/Repositories/articulate-pocketsphinx-go/caller_plus/test_data/feat_batch.param",
 	"-frate", "72",
 	"-fwdflat", "no",
 	"-hmm", "/home/dbarbera/Repositories/articulate-pocketsphinx-go/caller_plus/test_data/model/art-en-us/en-us",

@@ -329,36 +329,38 @@ func testing_ps_continuous() {
 	}
 
 	//This works, because it is serialised
-	// sequentially(frates, parameters, jsgf_buffers, wav_buffers)
+	sequentially(frates, parameters, jsgf_buffers, wav_buffers)
 
-	// results := concurrently(frates, parameters, jsgf_buffers, wav_buffers)
-	// fmt.Println(results)
-	//concurrently_int(5)
-
-	//Testing how many threads in parallel can we do:
-	var pjsgf_buffers [n][]byte
-	var pwav_buffers [n][]byte
-	var pwavs [n]string
-	var pparameters [n][]string
-	var pjsgfs [n]string
-	var pfrates [n]string
-
-	var f = 0
-	for i := 0; i < n; i++ {
-		pjsgfs[i] = jsgfs[f]
-		pwavs[i] = wavs[f]
-		pfrates[i] = frates[f]
-		pparameters[i] = parameters[f]
-		pjsgf_buffers[i], err = os.ReadFile(pjsgfs[i])
-		check(err)
-		pwav_buffers[i], err = os.ReadFile(pwavs[i])
-		check(err)
-
-	}
-	sequentially(pfrates, pparameters, pjsgf_buffers, pwav_buffers)
-
-	results := concurrently(pfrates, pparameters, pjsgf_buffers, pwav_buffers)
+	results := concurrently(frates, parameters, jsgf_buffers, wav_buffers)
 	fmt.Println(results)
+	concurrently_int(5)
+
+	// //Testing how many threads in parallel can we do:
+	// var pjsgf_buffers [n][]byte
+	// var pwav_buffers [n][]byte
+	// var pwavs [n]string
+	// var pparameters [n][]string
+	// var pjsgfs [n]string
+	// var pfrates [n]string
+
+	// var f = 0
+	// for i := 0; i < n; i++ {
+	// 	pjsgfs[i] = jsgfs[f]
+	// 	pwavs[i] = wavs[f]
+	// 	pfrates[i] = frates[f]
+	// 	pparameters[i] = parameters[f]
+	// 	pjsgf_buffers[i], err = os.ReadFile(pjsgfs[i])
+	// 	check(err)
+	// 	pwav_buffers[i], err = os.ReadFile(pwavs[i])
+	// 	check(err)
+
+	// }
+	// //sequentially(pfrates, pparameters, pjsgf_buffers, pwav_buffers)
+	// fmt.Println(n, " scans:")
+	// concurrently(pfrates, pparameters, pjsgf_buffers, pwav_buffers)
+
+	// results := concurrently(pfrates, pparameters, pjsgf_buffers, pwav_buffers)
+	// fmt.Println(results)
 
 }
 
@@ -427,9 +429,60 @@ func testing_ps_batch() {
 
 }
 
+func testing_continuous_n() {
+	var frates [5]string
+	var parameters [5][]string
+	var jsgfs [5]string
+	var wavs [5]string
+
+	var err error
+	var jsgf_buffers [n][]byte
+	var wav_buffers [n][]byte
+
+	for i := 0; i < n; i++ {
+		frates[i] = getValue("-frate", params72)
+		parameters[i] = params72
+		jsgfs[i] = getValue("-jsgf", params72)
+		wavs[i] = getValue("-infile", params72)
+		jsgf_buffers[i], err = os.ReadFile(jsgfs[i])
+		check(err)
+		wav_buffers[i], err = os.ReadFile(wavs[i])
+		check(err)
+	}
+
+	//This works, because it is serialised
+	sequentially(frates, parameters, jsgf_buffers, wav_buffers)
+
+	results := concurrently(frates, parameters, jsgf_buffers, wav_buffers)
+	fmt.Println(results)
+	concurrently_int(5)
+
+	//Testing how many threads in parallel can we do:
+	// var pjsgf_buffers [n][]byte
+	// var pwav_buffers [n][]byte
+	// var pwavs [n]string
+	// var pparameters [n][]string
+	// var pjsgfs [n]string
+	// var pfrates [n]string
+
+	// var f = 0
+	// for i := 0; i < n; i++ {
+	// 	pjsgfs[i] = jsgfs[f]
+	// 	pwavs[i] = wavs[f]
+	// 	pfrates[i] = frates[f]
+	// 	pparameters[i] = parameters[f]
+	// 	pjsgf_buffers[i], err = os.ReadFile(pjsgfs[i])
+	// 	check(err)
+	// 	pwav_buffers[i], err = os.ReadFile(pwavs[i])
+	// 	check(err)
+
+	// }
+
+}
+
 //Sorry, quick and dirty:
 func main() {
-	//testing_ps_continuous()
+	testing_ps_continuous()
 	testing_ps_batch()
 
 }
