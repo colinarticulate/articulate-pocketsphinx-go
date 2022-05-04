@@ -1,7 +1,7 @@
 #include <stdexcept>
 #include <limits>
 #include <iostream>
-#include <chrono>
+//#include <chrono>
 #include <math.h> 
 /* SphinxBase headers. */
 //#include <xyzsphinxbase/pio.h>
@@ -1209,9 +1209,9 @@ class XYZ_Batch {
         ps_plus_reinit(void) //(ps_decoder_t *ps, cmd_ln_t *config, void *buffer, size_t size) // buffer for jsgf grammar
         {
 
-            using namespace std::chrono;
-            high_resolution_clock::time_point start;
-            high_resolution_clock::time_point end;
+            // using namespace std::chrono;
+            // high_resolution_clock::time_point start;
+            // high_resolution_clock::time_point end;
 	        
             
             

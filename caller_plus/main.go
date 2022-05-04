@@ -4,8 +4,13 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
+	"log"
+	_ "net/http/pprof"
 	"os"
+	"runtime/pprof"
+	"runtime/trace"
 	"sort"
 	"sync"
 	"time"
@@ -14,6 +19,7 @@ import (
 	//"xyz"
 	//"github.com/colinarticulate/scanScheduler"
 	"github.com/davidbarbera/articulate-pocketsphinx-go/xyz_plus"
+	//"github.com/pkg/profile"
 )
 
 //Checking cores
@@ -29,7 +35,11 @@ func call_to_ps_wg_chan(jsgf_buffer []byte, audio_buffer []byte, params []string
 	defer wg.Done()
 
 	//resultChan <- Ps(jsgf_buffer, audio_buffer, params)
+	start := time.Now()
 	resultChan <- xyz_plus.Ps_plus_call(jsgf_buffer, audio_buffer, params)
+	t := time.Now()
+	elapsed := t.Sub(start)
+	fmt.Println("elapsed =", elapsed)
 
 }
 
@@ -37,7 +47,11 @@ func call_to_ps_batch_wg_chan(audio_buffer []byte, params []string, wg *sync.Wai
 	defer wg.Done()
 
 	//resultChan <- Ps(jsgf_buffer, audio_buffer, params)
+	start := time.Now()
 	resultChan <- xyz_plus.Ps_batch_plus_call(audio_buffer, params)
+	t := time.Now()
+	elapsed := t.Sub(start)
+	fmt.Println("elapsed =", elapsed)
 
 }
 
@@ -83,7 +97,7 @@ func concurrently_int(n int) {
 	fmt.Println(result)
 }
 
-func concurrently(frates [n]string, parameters [n][]string, jsgf_buffers [n][]byte, audio_buffers [n][]byte) [][]xyz_plus.Utt {
+func concurrently_n(frates [n]string, parameters [n][]string, jsgf_buffers [n][]byte, audio_buffers [n][]byte) [][]xyz_plus.Utt {
 	m := len(audio_buffers)
 	var results [][]xyz_plus.Utt
 	ch := make(chan []xyz_plus.Utt, 1)
@@ -92,6 +106,7 @@ func concurrently(frates [n]string, parameters [n][]string, jsgf_buffers [n][]by
 
 	//n := len(wavs)
 	//wg.Add(n)
+	fmt.Printf(">>>> multithreaded:\n")
 	start := time.Now()
 	for i := 0; i < m; i++ {
 
@@ -125,12 +140,73 @@ func concurrently(frates [n]string, parameters [n][]string, jsgf_buffers [n][]by
 	elapsed := time.Since(start)
 
 	// fmt.Println("Concurrently (multithreaded-encapsulated): ")
-	// // for result := range results {
-	// // 	fmt.Println(result)
-	// // }
-	// fmt.Println(results)
-	fmt.Printf(">>>> Timing: %s\n", elapsed)
-	// fmt.Println()
+	// for result := range results {
+	// 	fmt.Println(result)
+	// }
+	//fmt.Println(results)
+	// for _, result := range results {
+	// 	fmt.Println(result)
+	// }
+	fmt.Printf(">>>> Timing multithreaded: %s\n", elapsed)
+	fmt.Println()
+
+	return results
+}
+
+func concurrently(frates [n]string, parameters [n][]string, jsgf_buffers [n][]byte, audio_buffers [n][]byte) [][]xyz_plus.Utt {
+	m := len(audio_buffers)
+	var results [][]xyz_plus.Utt
+	ch := make(chan []xyz_plus.Utt, 1)
+	//var id = []int{1, 2, 3, 4, 5}
+	var wg sync.WaitGroup
+
+	//n := len(wavs)
+	//wg.Add(n)
+	fmt.Printf(">>>> multithreaded:\n")
+	start := time.Now()
+	for j := 0; j < 8; j++ {
+		for i := 0; i < m; i++ {
+
+			wg.Add(1)
+
+			go call_to_ps_wg_chan(jsgf_buffers[i], audio_buffers[i], parameters[i], &wg, ch)
+		}
+	}
+
+	// go func() {
+	// 	for v := range ch {
+	// 		results = append(results, v)
+	// 	}
+	// }()
+	// wg.Wait()
+	// close(ch)
+
+	go func() {
+		wg.Wait()
+		close(ch)
+	}()
+
+	//time.Sleep(1000 * time.Millisecond)
+	//Gathering or displaying results:
+	for v := range ch {
+		results = append(results, v)
+	}
+	// for elem := range ch {
+	// 	fmt.Println(elem)
+	// }
+
+	elapsed := time.Since(start)
+
+	// fmt.Println("Concurrently (multithreaded-encapsulated): ")
+	// for result := range results {
+	// 	fmt.Println(result)
+	// }
+	//fmt.Println(results)
+	// for _, result := range results {
+	// 	fmt.Println(result)
+	// }
+	fmt.Printf(">>>> Timing multithreaded: %s\n", elapsed)
+	fmt.Println()
 
 	return results
 }
@@ -144,12 +220,15 @@ func concurrently_batch(frates [n]string, parameters [n][]string, audio_buffers 
 
 	//n := len(wavs)
 	//wg.Add(n)
+	fmt.Printf(">>>> multithreaded:\n")
 	start := time.Now()
-	for i := 0; i < m; i++ {
+	for j := 0; j < 8; j++ {
+		for i := 0; i < m; i++ {
 
-		wg.Add(1)
+			wg.Add(1)
 
-		go call_to_ps_batch_wg_chan(audio_buffers[i], parameters[i], &wg, ch)
+			go call_to_ps_batch_wg_chan(audio_buffers[i], parameters[i], &wg, ch)
+		}
 	}
 
 	// go func() {
@@ -181,7 +260,12 @@ func concurrently_batch(frates [n]string, parameters [n][]string, audio_buffers 
 	// // 	fmt.Println(result)
 	// // }
 	// fmt.Println(results)
-	fmt.Printf(">>>> Timing: %s\n", elapsed)
+
+	for _, result := range results {
+		fmt.Println(result)
+	}
+	fmt.Printf(">>>> Timing multithreaded: %s\n", elapsed)
+
 	// fmt.Println()
 
 	return results
@@ -189,23 +273,25 @@ func concurrently_batch(frates [n]string, parameters [n][]string, audio_buffers 
 
 func sequentially(frates [n]string, parameters [n][]string, jsgfs [n][]byte, wavs [n][]byte) {
 	m := len(wavs)
+	fmt.Printf(">>>> Sequential:\n")
 	starti := time.Now()
 	for i := 0; i < m; i++ {
 		test_ps(frates[i], jsgfs[i], wavs[i], parameters[i])
 	}
 	elapsedi := time.Since(starti)
-	fmt.Printf(">>>> Timing: %s\n", elapsedi)
+	fmt.Printf(">>>> Timing Sequential: %s\n", elapsedi)
 	fmt.Println()
 }
 
 func sequentially_batch(frates [n]string, parameters [n][]string, wavs [n][]byte) {
 	m := len(wavs)
+	fmt.Printf(">>>> Sequential:\n")
 	starti := time.Now()
 	for i := 0; i < m; i++ {
 		test_ps_batch(frates[i], wavs[i], parameters[i])
 	}
 	elapsedi := time.Since(starti)
-	fmt.Printf(">>>> Timing: %s\n", elapsedi)
+	fmt.Printf(">>>> Timing Sequential: %s\n", elapsedi)
 	fmt.Println()
 }
 
@@ -227,9 +313,10 @@ func test_ps(frate string, jsgf_buffer []byte, audio_buffer []byte, parameters [
 	//var r = Ps(jsgf_buffer, audio_buffer, parameters)
 	var r = xyz_plus.Ps_plus_call(jsgf_buffer, audio_buffer, parameters)
 	elapsedi := time.Since(starti)
-	fmt.Printf(">>>> Timing: %s\n", elapsedi)
-	fmt.Println("--- frate = ", frate, r)
-	fmt.Println()
+	//fmt.Printf(">>>> Timing: %s\n", elapsedi)
+	//fmt.Println(">>> ", elapsedi, "\t--- frate = ", frate, r)
+	fmt.Println("--- frate = ", frate, ": ", r, "    \t>>>> Timing: ", elapsedi)
+	//fmt.Println()
 
 }
 
@@ -329,11 +416,11 @@ func testing_ps_continuous() {
 	}
 
 	//This works, because it is serialised
-	sequentially(frates, parameters, jsgf_buffers, wav_buffers)
+	//sequentially(frates, parameters, jsgf_buffers, wav_buffers)
 
-	results := concurrently(frates, parameters, jsgf_buffers, wav_buffers)
-	fmt.Println(results)
-	concurrently_int(5)
+	concurrently(frates, parameters, jsgf_buffers, wav_buffers)
+	// fmt.Println(results)
+	// concurrently_int(5)
 
 	// //Testing how many threads in parallel can we do:
 	// var pjsgf_buffers [n][]byte
@@ -419,7 +506,7 @@ func testing_ps_batch() {
 	//test_ps_batch(frates[0], wav_buffers[0], parameters[0])
 
 	//nees n=5
-	sequentially_batch(frates, parameters, wav_buffers)
+	//sequentially_batch(frates, parameters, wav_buffers)
 
 	//needs n=5
 	results := concurrently_batch(frates, parameters, wav_buffers)
@@ -430,10 +517,10 @@ func testing_ps_batch() {
 }
 
 func testing_continuous_n() {
-	var frates [5]string
-	var parameters [5][]string
-	var jsgfs [5]string
-	var wavs [5]string
+	var frates [n]string
+	var parameters [n][]string
+	var jsgfs [n]string
+	var wavs [n]string
 
 	var err error
 	var jsgf_buffers [n][]byte
@@ -451,11 +538,11 @@ func testing_continuous_n() {
 	}
 
 	//This works, because it is serialised
-	sequentially(frates, parameters, jsgf_buffers, wav_buffers)
+	//sequentially(frates, parameters, jsgf_buffers, wav_buffers)
 
-	results := concurrently(frates, parameters, jsgf_buffers, wav_buffers)
-	fmt.Println(results)
-	concurrently_int(5)
+	concurrently_n(frates, parameters, jsgf_buffers, wav_buffers)
+	//fmt.Println(results)
+	//concurrently_int(5)
 
 	//Testing how many threads in parallel can we do:
 	// var pjsgf_buffers [n][]byte
@@ -480,9 +567,68 @@ func testing_continuous_n() {
 
 }
 
+// func profiling() {
+// 	// CPUProfile enables cpu profiling. Note: Default is CPU
+// 	//defer profile.Start(profile.CPUProfile).Stop()
+
+// 	// GoroutineProfile enables goroutine profiling.
+// 	// It returns all Goroutines alive when defer occurs.
+// 	//defer profile.Start(profile.GoroutineProfile, profile.ProfilePath(".")).Stop()
+
+// 	// BlockProfile enables block (contention) profiling.
+// 	//defer profile.Start(profile.BlockProfile).Stop()
+
+// 	// ThreadcreationProfile enables thread creation profiling.
+// 	//defer profile.Start(profile.ThreadcreationProfile).Stop()
+
+// 	// MemProfileHeap changes which type of memory profiling to
+// 	// profile the heap.
+// 	//defer profile.Start(profile.MemProfileHeap).Stop()
+
+// 	// MemProfileAllocs changes which type of memory to profile
+// 	// allocations.
+// 	//defer profile.Start(profile.MemProfileAllocs).Stop()
+
+// 	// MutexProfile enables mutex profiling.
+// 	//defer profile.Start(profile.MutexProfile).Stop()
+
+// 	testing_ps_continuous()
+// }
+
+var cpuprofile = flag.String("cpuprofile", "", "Writes cpu profile to a file.")
+var traceprofile = flag.String("traceprofile", "", "writest trace profile to a file.")
+
 //Sorry, quick and dirty:
 func main() {
+	flag.Parse()
+	if *cpuprofile != "" {
+		f, err := os.Create(*cpuprofile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
+	}
+
+	flag.Parse()
+	if *traceprofile != "" {
+		f, err := os.Create(*traceprofile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		trace.Start(f)
+		defer trace.Stop()
+	}
+
+	//pprof.StartCPUProfile()
+	//profiling()
+	// go func() {
+	// 	log.Println(http.ListenAndServe("localhost:6060", nil))
+	// }()
 	testing_ps_continuous()
+	//pprof.StopCPUProfile()
 	testing_ps_batch()
+	//testing_continuous_n()
+	//fmt.Println("working on it.")
 
 }
