@@ -628,7 +628,7 @@ func main() {
 	// go func() {
 	// 	log.Println(http.ListenAndServe("localhost:6060", nil))
 	// }()
-	//testing_ps_continuous()
+	testing_ps_continuous()
 	//pprof.StopCPUProfile()
 	testing_ps_batch()
 	//testing_continuous_n()
