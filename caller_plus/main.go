@@ -162,9 +162,10 @@ func concurrently(frates [n]string, parameters [n][]string, jsgf_buffers [n][]by
 
 	//n := len(wavs)
 	//wg.Add(n)
-	fmt.Printf(">>>> multithreaded:\n")
+	p := 1
+	fmt.Printf(">>>> %dx%d Continuous multithreaded:\n", p, m) // p groups of 5 scans
 	start := time.Now()
-	for j := 0; j < 8; j++ {
+	for j := 0; j < p; j++ {
 		for i := 0; i < m; i++ {
 
 			wg.Add(1)
@@ -220,9 +221,10 @@ func concurrently_batch(frates [n]string, parameters [n][]string, audio_buffers 
 
 	//n := len(wavs)
 	//wg.Add(n)
-	fmt.Printf(">>>> multithreaded:\n")
+	p := 1
+	fmt.Printf(">>>> %dx%d Batch multithreaded:\n", p, m) // p groups of 5 scans
 	start := time.Now()
-	for j := 0; j < 8; j++ {
+	for j := 0; j < p; j++ {
 		for i := 0; i < m; i++ {
 
 			wg.Add(1)
@@ -261,9 +263,9 @@ func concurrently_batch(frates [n]string, parameters [n][]string, audio_buffers 
 	// // }
 	// fmt.Println(results)
 
-	for _, result := range results {
-		fmt.Println(result)
-	}
+	// for _, result := range results {
+	// 	fmt.Println(result)
+	// }
 	fmt.Printf(">>>> Timing multithreaded: %s\n", elapsed)
 
 	// fmt.Println()
@@ -509,10 +511,11 @@ func testing_ps_batch() {
 	//sequentially_batch(frates, parameters, wav_buffers)
 
 	//needs n=5
-	results := concurrently_batch(frates, parameters, wav_buffers)
-	for _, result := range results {
-		fmt.Println(result)
-	}
+	concurrently_batch(frates, parameters, wav_buffers)
+	// results := concurrently_batch(frates, parameters, wav_buffers)
+	// for _, result := range results {
+	// 	fmt.Println(result)
+	// }
 
 }
 
@@ -625,7 +628,7 @@ func main() {
 	// go func() {
 	// 	log.Println(http.ListenAndServe("localhost:6060", nil))
 	// }()
-	testing_ps_continuous()
+	//testing_ps_continuous()
 	//pprof.StopCPUProfile()
 	testing_ps_batch()
 	//testing_continuous_n()
