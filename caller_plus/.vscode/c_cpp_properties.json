@@ -13,7 +13,8 @@
                 // "${workspaceFolder}/../../xyzsphinxbase/src/libsphinxad",
                 // "${workspaceFolder}/../../xyzsphinxbase/src/libsphinxbase"
                 "/usr/local/include/xyzpocketsphinx",
-                "/usr/local/include/xyzsphinxbase"
+                "/usr/local/include/xyzsphinxbase",
+                "/usr/lib"
 
             ],
             "defines": [],

@@ -10,12 +10,13 @@
             "request": "launch",
             "mode": "auto",
             "program": "${fileDirname}",
+            //"program": "main.go",
              "args":[ 
                  "-cpuprofile","cpu.prof",
                  "-traceprofile","trace.prof"
              ],
             "env":{          
-                "GODEBUG":"cgocheck=0" , //Use this to remove cgo checks (useful when debugging)
+                "GODEBUG":"cgocheck=1" , //Use this to remove cgo checks (useful when debugging)
             }
         }
     ]

@@ -152,6 +152,8 @@ check_wav_header(char *header, int expected_sr)
     int sr;
 
     if (header[34] != 0x10) {
+        printf("here\n");
+        printf("Input audio file has [%d] bits per sample instead of 16\n", header[34]);
         E_ERROR("Input audio file has [%d] bits per sample instead of 16\n", header[34]);
         return 0;
     }
@@ -209,6 +211,16 @@ class XYZ_PocketSphinx {
             _argc=argc;
             //_argv=argv;
 
+            // printf("%d\n",jsgf_buffer_size);
+            // //printf("%d, %s sizeof: %lu\n",audio_buffer_size, (audio_buffer+34), sizeof((audio_buffer+34)));
+            // //printf("%d\n",rsize);
+            // printf("%d\n",argc);
+            // printf("sizeof a char %lu\n",  sizeof(char));
+
+            // for(int i=0;i<argc; i++){
+            //         printf("%s\t\t%d\n",argv[i],strlen(argv[i]));
+            //     }
+
             _argv = (char**)malloc(argc * sizeof(char*));
             for(int i =0; i< argc; i++){
                 if(argv[i]!=NULL) {
@@ -218,6 +230,7 @@ class XYZ_PocketSphinx {
                     printf("Error: copying parameters.");
                 }
             }
+            //printf("%d\n",jsgf_buffer_size);
 
             // memset(_result,'a',sizeof(char)*512);
             // _result[511]='\0';
@@ -233,6 +246,7 @@ class XYZ_PocketSphinx {
 
             _config = cmd_ln_parse_r(NULL, cont_args_def, _argc, _argv, TRUE);
 
+            
                 /* Handle argument file as -argfile. */
             if (_config && (cfg = cmd_ln_str_r(_config, "-argfile")) != NULL) {
                 _config = cmd_ln_parse_file_r(_config, cont_args_def, cfg, FALSE);
@@ -241,6 +255,7 @@ class XYZ_PocketSphinx {
             if (_config == NULL || (cmd_ln_str_r(_config, "-infile") == NULL && cmd_ln_boolean_r(_config, "-inmic") == FALSE)) {
                 E_INFO("Specify '-infile <file.wav>' to recognize from file or '-inmic yes' to recognize from microphone.\n");
                 cmd_ln_free_r(_config);
+                
                 return 1;
             }
 
@@ -251,12 +266,14 @@ class XYZ_PocketSphinx {
 
             if (_ps == NULL) {
                 cmd_ln_free_r(_config);
+                
                 return 1;
             }
 
             //E_INFO("%s COMPILED ON: %s, AT: %s\n\n", _argv[0], __DATE__, __TIME__);
             if(_config==NULL) printf("config is NULL !!!!\n");
             if(_ps==NULL) printf("ps is NULL!!!\n");
+            
             return 0;
         }
 
@@ -349,7 +366,6 @@ class XYZ_PocketSphinx {
             int result_size=0;
 
 
-
             fname = cmd_ln_str_r(_config, "-infile");
             // if ((rawfd = fopen(fname, "rb")) == NULL) {
             //     E_FATAL_SYSTEM("Failed to open file '%s' for reading",
@@ -362,19 +378,26 @@ class XYZ_PocketSphinx {
             // if (fresult == NULL ) {
             //     printf("Couldn't open file for results.\n");
             // }
+
+            
             
             //------------------- Needs better checking for wav format -----------------------------------------
             if (strlen(fname) > 4 && strcmp(fname + strlen(fname) - 4, ".wav") == 0) {
                 char waveheader[44];
                 k=fread(waveheader, 1, 44, file); //warning:  ignoring return value of ‘fread’
-            
-            if (!check_wav_header(waveheader, (int)cmd_ln_float32_r(_config, "-samprate")))
-                    E_FATAL("Failed to process file '%s' due to format mismatch.\n", fname);
+               
+                if (!check_wav_header(waveheader, (int)cmd_ln_float32_r(_config, "-samprate"))) {
+                        
+                        E_FATAL("Failed to process file '%s' due to format mismatch.\n", fname);
+                        
+                    }
+                
             }
-
+            
             if (strlen(fname) > 4 && strcmp(fname + strlen(fname) - 4, ".mp3") == 0) {
             E_FATAL("Can not decode mp3 files, convert input file to WAV 16kHz 16-bit mono before decoding.\n");
             }
+            
             //---------------------------------------------------------------------------------------------------
                        //--------------------------------------------------------------------------------------------------------------- (loop)
         //     ps_start_utt(_ps);
