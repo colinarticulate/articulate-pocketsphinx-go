@@ -21,13 +21,13 @@ import (
 //Checking cores
 const n int = 5
 
-// func call_to_ps(jsgf_buffer []byte, audio_buffer []byte, params []string, c chan []xyz_plus.Utt) {
+// func call_to_ps(jsgf_buffer []byte, audio_buffer []byte, params []string, c chan xyz_plus.UttResp) {
 
 // 	c <- Ps(jsgf_buffer, audio_buffer, params)
 
 // }
 
-func call_to_ps_wg_chan(jsgf_buffer []byte, audio_buffer []byte, params []string, wg *sync.WaitGroup, resultChan chan<- []xyz_plus.Utt) {
+func call_to_ps_wg_chan(jsgf_buffer []byte, audio_buffer []byte, params []string, wg *sync.WaitGroup, resultChan chan<- xyz_plus.UttResp) {
 	defer wg.Done()
 
 	//resultChan <- Ps(jsgf_buffer, audio_buffer, params)
@@ -39,19 +39,19 @@ func call_to_ps_wg_chan(jsgf_buffer []byte, audio_buffer []byte, params []string
 
 }
 
-// func call_to_ps_batch_wg_chan(audio_buffer []byte, params []string, wg *sync.WaitGroup, resultChan chan<- []string) {
-// 	defer wg.Done()
+func call_to_ps_batch_wg_chan(audio_buffer []byte, params []string, wg *sync.WaitGroup, resultChan chan<- xyz_plus.BatchResp) {
+	defer wg.Done()
 
-// 	//resultChan <- Ps(jsgf_buffer, audio_buffer, params)
-// 	start := time.Now()
-// 	resultChan <- xyz_plus.Ps_batch_plus_call(audio_buffer, params)
-// 	t := time.Now()
-// 	elapsed := t.Sub(start)
-// 	fmt.Println("elapsed =", elapsed)
+	//resultChan <- Ps(jsgf_buffer, audio_buffer, params)
+	start := time.Now()
+	resultChan <- xyz_plus.Ps_batch_plus_call(audio_buffer, params)
+	t := time.Now()
+	elapsed := t.Sub(start)
+	fmt.Println("elapsed =", elapsed)
 
-// }
+}
 
-func collect_ps_result(c chan []xyz_plus.Utt) {
+func collect_ps_result(c chan xyz_plus.UttResp) {
 	for {
 		select {
 		case msg := <-c:
@@ -93,16 +93,16 @@ func concurrently_int(n int) {
 	fmt.Println(result)
 }
 
-func concurrently_n(frates [n]string, parameters [n][]string, jsgf_buffers [n][]byte, audio_buffers [n][]byte) [][]xyz_plus.Utt {
+func concurrently_n(frates [n]string, parameters [n][]string, jsgf_buffers [n][]byte, audio_buffers [n][]byte) []xyz_plus.UttResp {
 	m := len(audio_buffers)
-	var results [][]xyz_plus.Utt
-	ch := make(chan []xyz_plus.Utt, 1)
+	var results []xyz_plus.UttResp
+	ch := make(chan xyz_plus.UttResp, 1)
 	//var id = []int{1, 2, 3, 4, 5}
 	var wg sync.WaitGroup
 
 	//n := len(wavs)
 	//wg.Add(n)
-	fmt.Printf(">>>> multithreaded:\n")
+	fmt.Printf("\n>>>> multithreaded:\n")
 	start := time.Now()
 	for i := 0; i < m; i++ {
 
@@ -149,17 +149,17 @@ func concurrently_n(frates [n]string, parameters [n][]string, jsgf_buffers [n][]
 	return results
 }
 
-func concurrently(frates [n]string, parameters [n][]string, jsgf_buffers [n][]byte, audio_buffers [n][]byte) [][]xyz_plus.Utt {
+func concurrently(frates [n]string, parameters [n][]string, jsgf_buffers [n][]byte, audio_buffers [n][]byte) []xyz_plus.UttResp {
 	m := len(audio_buffers)
-	var results [][]xyz_plus.Utt
-	ch := make(chan []xyz_plus.Utt, 1)
+	var results []xyz_plus.UttResp
+	ch := make(chan xyz_plus.UttResp, 1)
 	//var id = []int{1, 2, 3, 4, 5}
 	var wg sync.WaitGroup
 
 	//n := len(wavs)
 	//wg.Add(n)
 	p := 1
-	fmt.Printf(">>>> %dx%d Continuous multithreaded:\n", p, m) // p groups of 5 scans
+	fmt.Printf("\n>>>> %dx%d Continuous multithreaded:\n", p, m) // p groups of 5 scans
 	start := time.Now()
 	for j := 0; j < p; j++ {
 		for i := 0; i < m; i++ {
@@ -208,66 +208,66 @@ func concurrently(frates [n]string, parameters [n][]string, jsgf_buffers [n][]by
 	return results
 }
 
-// func concurrently_batch(frates [n]string, parameters [n][]string, audio_buffers [n][]byte) [][]string {
-// 	m := len(audio_buffers)
-// 	var results [][]string
-// 	ch := make(chan []string, 1)
-// 	//var id = []int{1, 2, 3, 4, 5}
-// 	var wg sync.WaitGroup
+func concurrently_batch(frates [n]string, parameters [n][]string, audio_buffers [n][]byte) []xyz_plus.BatchResp {
+	m := len(audio_buffers)
+	var results []xyz_plus.BatchResp
+	ch := make(chan xyz_plus.BatchResp, 1)
+	//var id = []int{1, 2, 3, 4, 5}
+	var wg sync.WaitGroup
 
-// 	//n := len(wavs)
-// 	//wg.Add(n)
-// 	p := 1
-// 	fmt.Printf(">>>> %dx%d Batch multithreaded:\n", p, m) // p groups of 5 scans
-// 	start := time.Now()
-// 	for j := 0; j < p; j++ {
-// 		for i := 0; i < m; i++ {
+	//n := len(wavs)
+	//wg.Add(n)
+	p := 1
+	fmt.Printf("\n>>>> %dx%d Batch multithreaded:\n", p, m) // p groups of 5 scans
+	start := time.Now()
+	for j := 0; j < p; j++ {
+		for i := 0; i < m; i++ {
 
-// 			wg.Add(1)
+			wg.Add(1)
 
-// 			go call_to_ps_batch_wg_chan(audio_buffers[i], parameters[i], &wg, ch)
-// 		}
-// 	}
+			go call_to_ps_batch_wg_chan(audio_buffers[i], parameters[i], &wg, ch)
+		}
+	}
 
-// 	// go func() {
-// 	// 	for v := range ch {
-// 	// 		results = append(results, v)
-// 	// 	}
-// 	// }()
-// 	// wg.Wait()
-// 	// close(ch)
+	// go func() {
+	// 	for v := range ch {
+	// 		results = append(results, v)
+	// 	}
+	// }()
+	// wg.Wait()
+	// close(ch)
 
-// 	go func() {
-// 		wg.Wait()
-// 		close(ch)
-// 	}()
+	go func() {
+		wg.Wait()
+		close(ch)
+	}()
 
-// 	//time.Sleep(1000 * time.Millisecond)
-// 	//Gathering or displaying results:
-// 	for v := range ch {
-// 		results = append(results, v)
-// 	}
-// 	// for elem := range ch {
-// 	// 	fmt.Println(elem)
-// 	// }
+	//time.Sleep(1000 * time.Millisecond)
+	//Gathering or displaying results:
+	for v := range ch {
+		results = append(results, v)
+	}
+	// for elem := range ch {
+	// 	fmt.Println(elem)
+	// }
 
-// 	elapsed := time.Since(start)
+	elapsed := time.Since(start)
 
-// 	// fmt.Println("Concurrently (multithreaded-encapsulated): ")
-// 	// // for result := range results {
-// 	// // 	fmt.Println(result)
-// 	// // }
-// 	// fmt.Println(results)
+	// fmt.Println("Concurrently (multithreaded-encapsulated): ")
+	// // for result := range results {
+	// // 	fmt.Println(result)
+	// // }
+	// fmt.Println(results)
 
-// 	// for _, result := range results {
-// 	// 	fmt.Println(result)
-// 	// }
-// 	fmt.Printf(">>>> Timing multithreaded: %s\n", elapsed)
+	for _, result := range results {
+		fmt.Println(result)
+	}
+	fmt.Printf(">>>> Timing multithreaded: %s\n", elapsed)
 
-// 	// fmt.Println()
+	// fmt.Println()
 
-// 	return results
-// }
+	return results
+}
 
 func sequentially(frates [n]string, parameters [n][]string, jsgfs [n][]byte, wavs [n][]byte) {
 	m := len(wavs)
@@ -281,17 +281,17 @@ func sequentially(frates [n]string, parameters [n][]string, jsgfs [n][]byte, wav
 	fmt.Println()
 }
 
-// func sequentially_batch(frates [n]string, parameters [n][]string, wavs [n][]byte) {
-// 	m := len(wavs)
-// 	fmt.Printf(">>>> Sequential:\n")
-// 	starti := time.Now()
-// 	for i := 0; i < m; i++ {
-// 		test_ps_batch(frates[i], wavs[i], parameters[i])
-// 	}
-// 	elapsedi := time.Since(starti)
-// 	fmt.Printf(">>>> Timing Sequential: %s\n", elapsedi)
-// 	fmt.Println()
-// }
+func sequentially_batch(frates [n]string, parameters [n][]string, wavs [n][]byte) {
+	m := len(wavs)
+	fmt.Printf(">>>> Sequential:\n")
+	starti := time.Now()
+	for i := 0; i < m; i++ {
+		test_ps_batch(frates[i], wavs[i], parameters[i])
+	}
+	elapsedi := time.Since(starti)
+	fmt.Printf(">>>> Timing Sequential: %s\n", elapsedi)
+	fmt.Println()
+}
 
 func check(e error) {
 	if e != nil {
@@ -318,22 +318,22 @@ func test_ps(frate string, jsgf_buffer []byte, audio_buffer []byte, parameters [
 
 }
 
-// func test_ps_batch(frate string, audio_buffer []byte, parameters []string) {
-// 	// jsgf_buffer, err := os.ReadFile(jsgf_filename)
-// 	// check(err)
-// 	// audio_buffer, err := os.ReadFile(wav_filename)
-// 	// check(err)
+func test_ps_batch(frate string, audio_buffer []byte, parameters []string) {
+	// jsgf_buffer, err := os.ReadFile(jsgf_filename)
+	// check(err)
+	// audio_buffer, err := os.ReadFile(wav_filename)
+	// check(err)
 
-// 	//fmt.Println("--- frate = ", frate)
-// 	starti := time.Now()
-// 	//var r = Ps(jsgf_buffer, audio_buffer, parameters)
-// 	var r = xyz_plus.Ps_batch_plus_call(audio_buffer, parameters)
-// 	elapsedi := time.Since(starti)
-// 	//fmt.Printf(">>>> Timing: %s\n", elapsedi)
-// 	fmt.Println("--- frate = ", frate, ": ", r, "    \t>>>> Timing: ", elapsedi)
-// 	//fmt.Println()
+	//fmt.Println("--- frate = ", frate)
+	starti := time.Now()
+	//var r = Ps(jsgf_buffer, audio_buffer, parameters)
+	var r = xyz_plus.Ps_batch_plus_call(audio_buffer, parameters)
+	elapsedi := time.Since(starti)
+	//fmt.Printf(">>>> Timing: %s\n", elapsedi)
+	fmt.Println("--- frate = ", frate, ": ", r, "    \t>>>> Timing: ", elapsedi)
+	//fmt.Println()
 
-// }
+}
 
 func readParams(args []string) map[string]string {
 
@@ -414,10 +414,12 @@ func testing_ps_continuous() {
 	}
 
 	//This works, because it is serialised
-	sequentially(frates, parameters, jsgf_buffers, wav_buffers)
+	//sequentially(frates, parameters, jsgf_buffers, wav_buffers)
 
-	//concurrently(frates, parameters, jsgf_buffers, wav_buffers)
-	// fmt.Println(results)
+	results := concurrently(frates, parameters, jsgf_buffers, wav_buffers)
+	for _, result := range results {
+		fmt.Println(result)
+	}
 	// concurrently_int(5)
 
 	// //Testing how many threads in parallel can we do:
@@ -507,7 +509,7 @@ func testing_ps_batch() {
 	//sequentially_batch(frates, parameters, wav_buffers)
 
 	//needs n=5
-	//concurrently_batch(frates, parameters, wav_buffers)
+	concurrently_batch(frates, parameters, wav_buffers)
 	// results := concurrently_batch(frates, parameters, wav_buffers)
 	// for _, result := range results {
 	// 	fmt.Println(result)
@@ -626,7 +628,7 @@ func main() {
 	// }()
 	testing_ps_continuous()
 	//pprof.StopCPUProfile()
-	//testing_ps_batch()
+	testing_ps_batch()
 	//testing_continuous_n()
 	//fmt.Println("working on it.")
 

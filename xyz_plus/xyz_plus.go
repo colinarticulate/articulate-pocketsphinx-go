@@ -15,11 +15,13 @@ package xyz_plus
 
 #include <stdlib.h>
 
-extern char* ps_plus_call2(void* jsgf_buffer, int jsgf_buffer_size, void* audio_buffer, int audio_buffer_size, int argc, char *argv[], char* result, int rsize);
+extern char* ps_continuous_call(void* jsgf_buffer, int jsgf_buffer_size, void* audio_buffer, int audio_buffer_size, int argc, char *argv[], char* result, int rsize);
+extern char* ps_batch_call(void* audio_buffer, int audio_buffer_size, int argc, char *argv[], char* result, int rsize);
 */
 import "C"
 
 import (
+	"errors"
 	"fmt"
 	_ "runtime/cgo"
 	"strconv"
@@ -48,7 +50,17 @@ type Utt struct {
 	Start, End int32
 }
 
-func Ps_plus_call(arg1 []byte, arg2 []byte, arg3 []string) []Utt {
+type UttResp struct {
+	Utts []Utt
+	Err  error
+}
+
+type BatchResp struct {
+	Cmn []string
+	Err error
+}
+
+func Ps_plus_call(arg1 []byte, arg2 []byte, arg3 []string) UttResp {
 
 	//jsgf buffer
 	bytes1 := C.CBytes(arg1)
@@ -59,21 +71,6 @@ func Ps_plus_call(arg1 []byte, arg2 []byte, arg3 []string) []Utt {
 	bytes2 := C.CBytes(arg2)
 	defer C.free(unsafe.Pointer(bytes2))
 	size_bytes2 := C.int(len(arg2))
-
-	//parameters
-	// cparameters_length := C.int(len(arg3))
-	// cparameters := C.malloc(C.size_t(len(arg3)) * C.size_t(unsafe.Sizeof(uintptr(0))))
-	// defer C.free(unsafe.Pointer(cparameters))
-
-	// //argv := os.Args
-	// c_argc := C.int(len(arg3))
-	// //c_argv := (*[0xfff]*C.char)(C.allocArgv(argc))
-	// c_argv := C.malloc(C.size_t(len(arg3)) * C.size_t(**_Ctype_char))
-	// defer C.free(unsafe.Pointer(c_argv))
-
-	// for i, arg := range arg3 {
-	// 	c_argv[i] = C.CString(arg)
-	// 	defer C.free(unsafe.Pointer(c_argv[i]))
 
 	cArray := C.malloc(C.size_t(len(arg3)) * C.size_t(unsafe.Sizeof(uintptr(0))))
 	defer C.free(unsafe.Pointer(cArray))
@@ -93,11 +90,12 @@ func Ps_plus_call(arg1 []byte, arg2 []byte, arg3 []string) []Utt {
 	defer C.free(unsafe.Pointer(cresult))
 	cresult_length := C.int(len(_result[0]))
 
-	msg := C.ps_plus_call2(bytes1, size_bytes1, bytes2, size_bytes2, c_argc, (**C.char)(unsafe.Pointer(cArray)), cresult, cresult_length)
+	msg := C.ps_continuous_call(bytes1, size_bytes1, bytes2, size_bytes2, c_argc, (**C.char)(unsafe.Pointer(cArray)), cresult, cresult_length)
 
 	if msg != nil {
 		defer C.free(unsafe.Pointer(msg))
-		fmt.Println("Return error: ", C.GoString(msg))
+		//fmt.Println("Return error: ", C.GoString(msg))
+		return UttResp{[]Utt{}, errors.New(C.GoString(msg))}
 	}
 
 	result := C.GoStringN(cresult, cresult_length)
@@ -108,6 +106,7 @@ func Ps_plus_call(arg1 []byte, arg2 []byte, arg3 []string) []Utt {
 
 		if len(raw) < 2 {
 			fmt.Println("xyzpocketsphinx: problems!")
+			return UttResp{[]Utt{}, errors.New("Error: result from pocketsphinx continuous came back empty.")}
 		}
 
 		//fmt.Printf("%T", raw)
@@ -140,101 +139,67 @@ func Ps_plus_call(arg1 []byte, arg2 []byte, arg3 []string) []Utt {
 				}
 			}
 		}
-		return utts
+
+		return UttResp{utts, nil}
+
 	} else {
-		return nil
+
+		return UttResp{[]Utt{}, errors.New("Error: result from pocketsphinx continuous came back corrupted.")}
 	}
 
 }
 
-// func Ps_plus_call(arg1 []byte, arg2 []byte, arg3 []string) []Utt {
-// 	//var swig_r int
-// 	_swig_i_0 := arg1
-// 	_swig_i_1 := arg2
-// 	_swig_i_2 := arg3
-// 	//_swig_i_3 := arg4
-// 	// swig_r = (int)(C._wrap_ps_plus_call_xyz_2460481bc7b6ab28((*(*C.swig_type_1)(unsafe.Pointer(&_swig_i_0))), (*(*C.swig_type_1)(unsafe.Pointer(&_swig_i_1))), (*(*C.swig_type_2)(unsafe.Pointer(&_swig_i_2))), (*(*C.swig_type_4)(unsafe.Pointer(&_swig_i_3)))))
+func Ps_batch_plus_call(arg2 []byte, arg3 []string) BatchResp {
 
-// 	// if Swig_escape_always_false {
-// 	// 	Swig_escape_val = arg1
-// 	// }
-// 	result := []string{"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"}
+	//audio buffer
+	bytes2 := C.CBytes(arg2)
+	defer C.free(unsafe.Pointer(bytes2))
+	size_bytes2 := C.int(len(arg2))
 
-// 	C._wrap_ps_plus_call_xyz_2460481bc7b6ab28((*(*C.swig_type_1)(unsafe.Pointer(&_swig_i_0))), (*(*C.swig_type_1)(unsafe.Pointer(&_swig_i_1))), (*(*C.swig_type_2)(unsafe.Pointer(&_swig_i_2))), (*(*C.swig_type_4)(unsafe.Pointer(&result))))
+	cArray := C.malloc(C.size_t(len(arg3)) * C.size_t(unsafe.Sizeof(uintptr(0))))
+	defer C.free(unsafe.Pointer(cArray))
 
-// 	//Adapting result from coded string to utt struct
-// 	if strings.Contains(result[0], "**") {
-// 		raw := strings.Split(result[0], "**")
+	// convert the C array to a Go Array so we can index it
+	a := (*[1<<30 - 1]*C.char)(cArray)
+	for index, value := range arg3 {
+		//a[index] = C.malloc((C.size_t(len(value)) + 1) * C.size_t(unsafe.Sizeof(uintptr(0))))
+		a[index] = C.CString(value + "\000")
+		//defer C.free(unsafe.Pointer(a[index]))
+	}
+	c_argc := C.int(len(arg3))
 
-// 		if len(raw) < 2 {
-// 			fmt.Println("xyzpocketsphinx: problems!")
-// 		}
+	//result
+	_result := []string{"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"}
+	cresult := C.CString(_result[0])
+	defer C.free(unsafe.Pointer(cresult))
+	cresult_length := C.int(len(_result[0]))
 
-// 		//fmt.Printf("%T", raw)
-// 		fields := strings.Split(raw[0], "*")
+	msg := C.ps_batch_call(bytes2, size_bytes2, c_argc, (**C.char)(unsafe.Pointer(cArray)), cresult, cresult_length)
 
-// 		//fmt.Println(fields)
-// 		// hyp := fields[0]
-// 		// score := fields[1]
+	if msg != nil {
+		defer C.free(unsafe.Pointer(msg))
+		//fmt.Println("Return error: ", C.GoString(msg))
+		return BatchResp{[]string{}, errors.New(C.GoString(msg))}
+	}
 
-// 		//fmt.Println(hyp)
-// 		//fmt.Println(strings.Split(score, ","))
-// 		utts := []Utt{}
-// 		//var utts = make([]Utt, len(fields)-2)
+	result := C.GoStringN(cresult, cresult_length)
 
-// 		for i := 0; i < len(fields)-2; i++ {
-// 			parts := strings.Split(fields[2:][i], ",")
-// 			phoneme := parts[0]
-// 			text_start := parts[1]
-// 			text_end := parts[2]
-// 			start, serr := strconv.Atoi(text_start)
-// 			end, eerr := strconv.Atoi(text_end)
+	//Adapting result from coded string to utt struct
+	if strings.Contains(result, ",*") {
+		raw := strings.Split(result, ",*")
 
-// 			if phoneme != "(NULL)" {
-// 				//fmt.Println(phoneme, start, end)
-// 				//utts = append(utts, xyz_plus.Utt{phoneme, int32(start), int32(end)})
-// 				utts = append(utts, Utt{Text: phoneme, Start: int32(start), End: int32(end)})
+		if len(raw) < 2 {
+			fmt.Println("xyzpocketsphinx_batch: problems!")
+			return BatchResp{[]string{""}, errors.New("Error: result from pocketsphinx batch came back empty.")}
+		}
 
-// 				if serr != nil || eerr != nil {
-// 					fmt.Println(serr, eerr)
-// 				}
-// 			}
-// 		}
-// 		return utts
-// 	} else {
-// 		return nil
-// 	}
+		numbers := strings.Split(raw[0], ",")
 
-// }
+		return BatchResp{numbers, nil}
 
-// func Ps_batch_plus_call(arg2 []byte, arg3 []string) []string {
-// 	//var swig_r int
-// 	//_swig_i_0 := arg1
-// 	_swig_i_1 := arg2
-// 	_swig_i_2 := arg3
-// 	//_swig_i_3 := arg4
-// 	// swig_r = (int)(C._wrap_ps_plus_call_xyz_2460481bc7b6ab28((*(*C.swig_type_1)(unsafe.Pointer(&_swig_i_0))), (*(*C.swig_type_1)(unsafe.Pointer(&_swig_i_1))), (*(*C.swig_type_2)(unsafe.Pointer(&_swig_i_2))), (*(*C.swig_type_4)(unsafe.Pointer(&_swig_i_3)))))
+	} else {
 
-// 	// if Swig_escape_always_false {
-// 	// 	Swig_escape_val = arg1
-// 	// }
-// 	result := []string{"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"}
+		return BatchResp{[]string{""}, errors.New("Error: result from pocketsphinx batch came back corrupted.")}
+	}
 
-// 	C._wrap_ps_batch_plus_call_xyz_2460481bc7b6ab28((*(*C.swig_type_1)(unsafe.Pointer(&_swig_i_1))), (*(*C.swig_type_2)(unsafe.Pointer(&_swig_i_2))), (*(*C.swig_type_4)(unsafe.Pointer(&result))))
-
-// 	//Adapting result from coded string to utt struct
-// 	if strings.Contains(result[0], ",*") {
-// 		raw := strings.Split(result[0], ",*")
-
-// 		if len(raw) < 2 {
-// 			fmt.Println("xyzpocketsphinx_batch: problems!")
-// 		}
-
-// 		numbers := strings.Split(raw[0], ",")
-
-// 		return numbers
-// 	} else {
-// 		return []string{""}
-// 	}
-
-// }
+}

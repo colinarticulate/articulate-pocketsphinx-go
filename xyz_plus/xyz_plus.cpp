@@ -20,7 +20,7 @@ extern "C" {
 
 
 //int ps_plus_call2(void* jsgf_buffer, int jsgf_buffer_size, void* audio_buffer, int audio_buffer_size, int argc, char *argv[], char* result, int rsize){
-int _ps_plus_call2(char* jsgf_buffer, int jsgf_buffer_size, char* audio_buffer, int audio_buffer_size, int argc, char *argv[], char* result, int rsize){
+int _ps_continuous_call(char* jsgf_buffer, int jsgf_buffer_size, char* audio_buffer, int audio_buffer_size, int argc, char *argv[], char* result, int rsize){
 
     
     //C version:
@@ -58,11 +58,11 @@ int _ps_plus_call2(char* jsgf_buffer, int jsgf_buffer_size, char* audio_buffer, 
     return ps._result_size;
  } 
 
-char* ps_plus_call2(char* jsgf_buffer, int jsgf_buffer_size, char* audio_buffer, int audio_buffer_size, int argc, char *argv[], char* result, int rsize){
+char* ps_continuous_call(char* jsgf_buffer, int jsgf_buffer_size, char* audio_buffer, int audio_buffer_size, int argc, char *argv[], char* result, int rsize){
     char* wresult=NULL;
     try {
-        _ps_plus_call2( jsgf_buffer,  jsgf_buffer_size,  audio_buffer,  audio_buffer_size,  argc, argv, result, rsize);
-        //throw("on purpose.");
+        _ps_continuous_call( jsgf_buffer,  jsgf_buffer_size,  audio_buffer,  audio_buffer_size,  argc, argv, result, rsize);
+        //throw std::runtime_error("on purpose.");
         //wresult = strdup("nil");
     } catch(std::exception &e) {
         wresult = strdup(e.what());
@@ -110,30 +110,42 @@ char* ps_plus_call2(char* jsgf_buffer, int jsgf_buffer_size, char* audio_buffer,
 //  } 
 
 
-//  int ps_batch_plus_call(void* audio_buffer, int audio_buffer_size, int argc, char *argv[], char* result, int rsize){
+ int _ps_batch_call(void* audio_buffer, int audio_buffer_size, int argc, char *argv[], char* result, int rsize){
 
 
-//     //C version:
-//     //resultsize=ps_call_from_go(jsgf_buffer, (size_t)jsgf_buffer_size, audio_buffer, (size_t)audio_buffer_size, argc, argv, sresult);
+    //C version:
+    //resultsize=ps_call_from_go(jsgf_buffer, (size_t)jsgf_buffer_size, audio_buffer, (size_t)audio_buffer_size, argc, argv, sresult);
 
-//     //Encapsulated version:
-//     XYZ_Batch ps;
-//     ps.init(audio_buffer, audio_buffer_size, argc, argv);
-//     ps.init_recognition();
-//     ps.process();
-//     ps.terminate();
+    //Encapsulated version:
+    XYZ_Batch ps;
+    ps.init(audio_buffer, audio_buffer_size, argc, argv);
+    ps.init_recognition();
+    ps.process();
+    ps.terminate();
 
 
 
-//     if (ps._result_size < rsize && strlen(ps._result)>0){
+    if (ps._result_size < rsize && strlen(ps._result)>0){
 
-//         for(int i=0;i<ps._result_size; i++){
-//             result[i]=(char)ps._result[i];
-//         }
-//     } 
+        for(int i=0;i<ps._result_size; i++){
+            result[i]=(char)ps._result[i];
+        }
+    } 
 
-//     return ps._result_size;
-//  } 
+    return ps._result_size;
+ } 
+
+ char* ps_batch_call(void* audio_buffer, int audio_buffer_size, int argc, char *argv[], char* result, int rsize){
+    char* wresult=NULL;
+    try {
+        _ps_batch_call( audio_buffer,  audio_buffer_size,  argc, argv, result, rsize);
+        //throw std::runtime_error("on purpose.");
+        //wresult = strdup("nil");
+    } catch(std::exception &e) {
+        wresult = strdup(e.what());
+    }
+    return wresult;
+}
 
  #ifdef __cplusplus
 }

@@ -6,6 +6,9 @@
 #include <assert.h>
 #include <chrono>
 #include <memory>
+//for testing:
+#include <random>
+#include <time.h>
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -39,6 +42,7 @@
 //Re-doing API:
 #include "_genrand.h"
 #include "_fe_warp.h"
+#include "_ps_error.h"
 
 /*Denting API*/
 //ps:
@@ -173,6 +177,15 @@ check_wav_header(char *header, int expected_sr)
     return 1;
 }
 
+//Impossible to translate C error logging system in C++. This is really bad:
+//Replaces E_FATAL macro:
+#define _CONTINUOUS_E_FATAL(...)                            \
+    do {                                                    \
+        _pserror.err_msg(ERR_FATAL, FILELINE, __VA_ARGS__); \
+        throw std::runtime_error(_pserror._msg);                  \
+    } while (0)
+
+
 
 class XYZ_PocketSphinx {
     private:
@@ -194,6 +207,10 @@ class XYZ_PocketSphinx {
 
         XYZ_SB_Genrand _genrand;
         XYZ_SB_FE_Warp _fe_warp;
+
+        //Errors from pocketsphinx:
+        PSErrorHandler _pserror;
+
 
             
     public:
@@ -273,7 +290,8 @@ class XYZ_PocketSphinx {
             //E_INFO("%s COMPILED ON: %s, AT: %s\n\n", _argv[0], __DATE__, __TIME__);
             if(_config==NULL) printf("config is NULL !!!!\n");
             if(_ps==NULL) printf("ps is NULL!!!\n");
-            
+
+                       
             return 0;
         }
 
@@ -368,7 +386,7 @@ class XYZ_PocketSphinx {
 
             fname = cmd_ln_str_r(_config, "-infile");
             // if ((rawfd = fopen(fname, "rb")) == NULL) {
-            //     E_FATAL_SYSTEM("Failed to open file '%s' for reading",
+            //     _CONTINUOUS_E_FATAL_SYSTEM("Failed to open file '%s' for reading",
             //                    fname);
             // }
             FILE* file = NULL;
@@ -388,14 +406,24 @@ class XYZ_PocketSphinx {
                
                 if (!check_wav_header(waveheader, (int)cmd_ln_float32_r(_config, "-samprate"))) {
                         
-                        E_FATAL("Failed to process file '%s' due to format mismatch.\n", fname);
+                        _CONTINUOUS_E_FATAL("Failed to process file '%s' due to format mismatch.\n", fname);
+                        //throw std::runtime_error("on purpose.");
                         
                     }
                 
             }
-            
+            // //TEST!!!!
+            // int max = 10;
+            // int min = 1;
+
+            // auto output = min + (rand() % static_cast<int>(max - min + 1));
+            // if (output < 5 ) {
+            //     _CONTINUOUS_E_FATAL("Failed to process file '%s' due to format mismatch. --- %d\n", fname,output);
+            //     //throw std::runtime_error(_pserror._msg);
+            // }
+
             if (strlen(fname) > 4 && strcmp(fname + strlen(fname) - 4, ".mp3") == 0) {
-            E_FATAL("Can not decode mp3 files, convert input file to WAV 16kHz 16-bit mono before decoding.\n");
+                _CONTINUOUS_E_FATAL("Can not decode mp3 files, convert input file to WAV 16kHz 16-bit mono before decoding.\n");
             }
             
             //---------------------------------------------------------------------------------------------------
@@ -718,8 +746,8 @@ class XYZ_PocketSphinx {
 
         
 
-        static int
-        //int
+        //static int
+        int
         _acmod_process_full_cep(acmod_t *acmod,
                             mfcc_t ***inout_cep,
                             int *inout_n_frames)
@@ -735,7 +763,7 @@ class XYZ_PocketSphinx {
             if (acmod->n_feat_alloc < *inout_n_frames) {
 
                 if (*inout_n_frames > MAX_N_FRAMES)
-                    E_FATAL("Batch processing can not process more than %d frames "
+                    _CONTINUOUS_E_FATAL("Batch processing can not process more than %d frames " \
                             "at once, requested %d\n", MAX_N_FRAMES, *inout_n_frames);
 
                 feat_array_free(acmod->feat_buf);
